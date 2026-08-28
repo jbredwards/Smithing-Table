@@ -66,18 +66,7 @@ public final class AssetMoverHandler
             @Nonnull final Sound sound = new Sound(location.toString(), 1, 1, 1, Sound.Type.FILE, false);
             resource = Minecraft.getMinecraft().getResourceManager().getResource(sound.getSoundAsOggLocation());
             resource.getInputStream(); // Validate input stream.
-            sounds.add(new ISoundEventAccessor<Sound>() {
-                @Override
-                public int getWeight() {
-                    return sound.getWeight();
-                }
-
-                @Nonnull
-                @Override
-                public Sound cloneEntry() {
-                    return sound.cloneEntry();
-                }
-            });
+            sounds.add(sound);
         }
         catch(@Nonnull final IOException ignored) {
             // NO-OP
