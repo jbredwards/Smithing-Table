@@ -1,7 +1,7 @@
 package git.jbredwards.smithing_table.mod.common.inventory;
 
 import git.jbredwards.smithing_table.mod.SmithingTable;
-import git.jbredwards.smithing_table.mod.common.TileSmithingTable;
+import git.jbredwards.smithing_table.mod.common.block.TileSmithingTable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;

@@ -1,11 +1,13 @@
 package git.jbredwards.smithing_table.mod;
 
 import git.jbredwards.smithing_table.api.SmithingContent;
+import git.jbredwards.smithing_table.mod.client.ModelSmithingTable;
 import git.jbredwards.smithing_table.mod.client.ModelSmithingTemplate;
-import git.jbredwards.smithing_table.mod.common.BlockSmithingTable;
-import git.jbredwards.smithing_table.mod.common.ItemSmithingTemplate;
-import git.jbredwards.smithing_table.mod.common.TileSmithingTable;
+import git.jbredwards.smithing_table.mod.common.block.BlockSmithingTable;
+import git.jbredwards.smithing_table.mod.common.item.ItemSmithingTemplate;
+import git.jbredwards.smithing_table.mod.common.block.TileSmithingTable;
 import net.minecraft.block.Block;
+import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
@@ -31,7 +33,7 @@ final class RegistryHandler
 {
     @SubscribeEvent
     static void registerBlocks(@Nonnull final RegistryEvent.Register<Block> event) {
-        event.getRegistry().register(new BlockSmithingTable(Material.WOOD).setTranslationKey(SmithingTable.MOD_ID + ".table").setRegistryName("table"));
+        event.getRegistry().register(new BlockSmithingTable(Material.WOOD, MapColor.BROWN_STAINED_HARDENED_CLAY).setTranslationKey(SmithingTable.MOD_ID + ".table").setRegistryName("table"));
         GameRegistry.registerTileEntity(TileSmithingTable.class, new ResourceLocation(SmithingTable.MOD_ID, "table"));
     }
 
@@ -45,6 +47,7 @@ final class RegistryHandler
     static void registerItemModels(@Nonnull final ModelRegistryEvent event) {
         ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(SmithingContent.SMITHING_TABLE), 0, new ModelResourceLocation(SmithingContent.SMITHING_TABLE.getRegistryName(), "inventory"));
         ModelLoader.setCustomModelResourceLocation(SmithingContent.SMITHING_TEMPLATE, 0, new ModelResourceLocation(SmithingContent.SMITHING_TEMPLATE.getRegistryName(), "inventory"));
+        ModelLoaderRegistry.registerLoader(ModelSmithingTable.Loader.INSTANCE);
         ModelLoaderRegistry.registerLoader(ModelSmithingTemplate.Loader.INSTANCE);
     }
 

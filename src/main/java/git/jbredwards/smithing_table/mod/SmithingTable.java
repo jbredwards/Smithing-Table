@@ -4,7 +4,7 @@ import git.jbredwards.smithing_table.Tags;
 import git.jbredwards.smithing_table.api.SmithingContent;
 import git.jbredwards.smithing_table.api.SmithingTemplateIngredient;
 import git.jbredwards.smithing_table.mod.client.SmithingTableGuiHandler;
-import git.jbredwards.smithing_table.mod.common.ItemSmithingTemplate;
+import git.jbredwards.smithing_table.mod.common.item.ItemSmithingTemplate;
 import git.jbredwards.smithing_table.mod.common.compat.AssetMoverHandler;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;

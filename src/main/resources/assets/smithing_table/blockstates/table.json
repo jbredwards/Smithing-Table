@@ -1,0 +1,25 @@
+{
+    "forge_marker": 1,
+    "defaults": {
+        "model": "smithing_table:builtin/table",
+        "transform": "forge:default-block",
+        "custom": {
+            "solid": "smithing_table:table#solid",
+            "tools": "smithing_table:table#tools",
+            "wood": "smithing_table:table#wood"
+        }
+    },
+    "variants": {
+        "normal": [{}],
+        "inventory": [{}],
+        "solid": {
+            "model": "smithing_table:solid"
+        },
+        "tools": {
+            "model": "smithing_table:tools"
+        },
+        "wood": {
+            "model": "smithing_table:wood"
+        }
+    }
+}

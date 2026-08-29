@@ -1,10 +1,11 @@
-package git.jbredwards.smithing_table.mod.common;
+package git.jbredwards.smithing_table.mod.common.block;
 
 import com.google.common.primitives.Floats;
 import git.jbredwards.smithing_table.api.SmithingRecipe;
 import git.jbredwards.smithing_table.mod.SmithingTable;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.MathHelper;
@@ -13,6 +14,7 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.IWorldNameable;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
@@ -145,14 +147,36 @@ public class TileSmithingTable extends TileEntity implements IWorldNameable
         return hasCustomName() ? new TextComponentString(getName()) : new TextComponentTranslation(getName());
     }
 
+    // -------
+    // Variant
+    // -------
+
+    @Nonnull
+    public TableData variant = TableData.DEFAULT;
+
+    @Nonnull
+    @Override
+    public NBTTagCompound getUpdateTag() {
+        @Nonnull final NBTTagCompound tag = super.getUpdateTag();
+        tag.setTag("Variant", variant.serializeNBT());
+        return tag;
+    }
+
+    @Nullable
+    @Override
+    public SPacketUpdateTileEntity getUpdatePacket() {
+        return new SPacketUpdateTileEntity(pos, 0, getUpdateTag());
+    }
+
     // -------------
     // Serialization
     // -------------
 
     @Override
     public void readFromNBT(@Nonnull final NBTTagCompound compound) {
-        customName = compound.getString("CustomName");
-        basicInventory.deserializeNBT(compound.getCompoundTag("Inventory"));
+        if(compound.hasKey("CustomName", Constants.NBT.TAG_STRING)) customName = compound.getString("CustomName");
+        if(compound.hasKey("Inventory", Constants.NBT.TAG_COMPOUND)) basicInventory.deserializeNBT(compound.getCompoundTag("Inventory"));
+        if(compound.hasKey("Variant", Constants.NBT.TAG_COMPOUND)) variant = TableData.deserialize(compound.getCompoundTag("Variant"));
         super.readFromNBT(compound);
     }
 
@@ -161,6 +185,7 @@ public class TileSmithingTable extends TileEntity implements IWorldNameable
     public NBTTagCompound writeToNBT(@Nonnull final NBTTagCompound compound) {
         compound.setString("CustomName", customName);
         compound.setTag("Inventory", basicInventory.serializeNBT());
+        compound.setTag("Variant", variant.serializeNBT());
         return super.writeToNBT(compound);
     }
 }

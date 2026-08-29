@@ -1,4 +1,4 @@
-package git.jbredwards.smithing_table.mod.common;
+package git.jbredwards.smithing_table.mod.common.item;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
