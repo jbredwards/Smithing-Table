@@ -8,10 +8,12 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.IWorldNameable;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.Constants;
@@ -153,6 +155,12 @@ public class TileSmithingTable extends TileEntity implements IWorldNameable
 
     @Nonnull
     public TableData variant = TableData.DEFAULT;
+
+    @Nonnull
+    public static TableData getVariant(@Nonnull final IBlockAccess world, @Nonnull final BlockPos pos) {
+        @Nullable final TileEntity tile = world.getTileEntity(pos);
+        return tile instanceof TileSmithingTable ? ((TileSmithingTable)tile).variant : TableData.DEFAULT;
+    }
 
     @Nonnull
     @Override

@@ -10,7 +10,6 @@ import git.jbredwards.smithing_table.mod.SmithingTable;
 import git.jbredwards.smithing_table.mod.common.block.TableData;
 import git.jbredwards.smithing_table.mod.common.block.UnlistedVariantProperty;
 import git.jbredwards.smithing_table.mod.common.item.ItemSmithingTable;
-import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.*;
@@ -40,6 +39,7 @@ import javax.vecmath.Matrix4f;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 /**
  *
@@ -133,7 +133,7 @@ public final class ModelSmithingTable implements IModel
                 else if(layer == BlockRenderLayer.CUTOUT) builder.addAll(tools.getQuads(state, side, rand));
 
                 @Nonnull final TableData trueVariant = getTrueVariant(state);
-                if(Block.getBlockFromItem(trueVariant.item).getRenderLayer() == layer) builder.add(Loader.INSTANCE.cache.getUnchecked(Triple.of(wood, side, trueVariant)));
+                if(trueVariant.getBlock().getRenderLayer() == layer) builder.add(Loader.INSTANCE.cache.getUnchecked(Triple.of(wood, side, trueVariant)));
             }
 
             return builder.build();
@@ -184,8 +184,8 @@ public final class ModelSmithingTable implements IModel
             @Nullable final EnumFacing side = info.getMiddle();
             @Nonnull final TableData variant = info.getRight();
 
-            @Nonnull final TextureAtlasSprite tex = Minecraft.getMinecraft().getRenderItem().getItemModelMesher().getParticleIcon(variant.item, variant.meta);
-            return model.getQuads(null, side, 0).stream().map(quad -> new BakedQuadRetextured(quad, tex)).toArray(BakedQuad[]::new);
+            @Nullable final TextureAtlasSprite tex = Minecraft.getMinecraft().getRenderItem().getItemModelMesher().getParticleIcon(variant.item, variant.meta);
+            return model.getQuads(null, side, 0).stream().map(tex != null ? quad -> new BakedQuadRetextured(quad, tex) : UnaryOperator.identity()).toArray(BakedQuad[]::new);
         }));
 
         @Override

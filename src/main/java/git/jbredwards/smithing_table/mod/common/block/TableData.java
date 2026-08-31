@@ -1,5 +1,7 @@
 package git.jbredwards.smithing_table.mod.common.block;
 
+import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.nbt.NBTTagCompound;
@@ -26,6 +28,17 @@ public final class TableData
     public TableData(@Nonnull final Item itemIn, final int metaIn) {
         item = Objects.requireNonNull(itemIn);
         meta = metaIn;
+    }
+
+    @Nonnull
+    public Block getBlock() {
+        @Nullable final Block block = Block.getBlockFromItem(item);
+        return block != null ? block : Blocks.AIR;
+    }
+
+    @Nonnull
+    public IBlockState getBlockState() {
+        return getBlock().getStateFromMeta(meta);
     }
 
     @Override

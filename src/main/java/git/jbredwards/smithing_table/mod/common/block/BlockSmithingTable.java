@@ -118,8 +118,7 @@ public class BlockSmithingTable extends BlockContainer
     @Nonnull
     @Override
     public SoundType getSoundType(@Nonnull final IBlockState state, @Nonnull final World world, @Nonnull final BlockPos pos, @Nullable final Entity entity) {
-        @Nullable final TileEntity tile = world.getTileEntity(pos);
-        return tile instanceof TileSmithingTable ? getBlockFromItem(((TileSmithingTable)tile).variant.item).getSoundType() : getSoundType();
+        return TileSmithingTable.getVariant(world, pos).getBlock().getSoundType();
     }
 
     @Nonnull
@@ -132,8 +131,7 @@ public class BlockSmithingTable extends BlockContainer
     @Override
     public IBlockState getExtendedState(@Nonnull final IBlockState state, @Nonnull final IBlockAccess world, @Nonnull final BlockPos pos) {
         if(state instanceof IExtendedBlockState) {
-            @Nullable final TileEntity tile = world.getTileEntity(pos);
-            if(tile instanceof TileSmithingTable) return ((IExtendedBlockState)state).withProperty(UnlistedVariantProperty.INSTANCE, ((TileSmithingTable)tile).variant);
+            return ((IExtendedBlockState)state).withProperty(UnlistedVariantProperty.INSTANCE, TileSmithingTable.getVariant(world, pos));
         }
 
         return state;
@@ -145,13 +143,18 @@ public class BlockSmithingTable extends BlockContainer
     }
 
     @Override
-    public boolean isFullCube(@Nonnull final IBlockState state) {
+    public boolean isOpaqueCube(@Nonnull final IBlockState state) {
         return false;
     }
 
     @Override
-    public boolean isOpaqueCube(@Nonnull final IBlockState state) {
-        return false;
+    public boolean isNormalCube(@Nonnull final IBlockState state, @Nonnull final IBlockAccess world, @Nonnull final BlockPos pos) {
+        return TileSmithingTable.getVariant(world, pos).getBlockState().isNormalCube();
+    }
+
+    @Override
+    public boolean doesSideBlockRendering(@Nonnull final IBlockState state, @Nonnull final IBlockAccess world, @Nonnull final BlockPos pos, @Nonnull final EnumFacing face) {
+        return TileSmithingTable.getVariant(world, pos).getBlockState().isOpaqueCube();
     }
 
     @Override
