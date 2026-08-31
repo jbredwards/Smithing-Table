@@ -8,12 +8,15 @@ import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.translation.I18n;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.oredict.OreDictionary;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.LinkedHashSet;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -31,8 +34,19 @@ public class ItemSmithingTable extends ItemBlock
     @Nonnull
     @Override
     public String getItemStackDisplayName(@Nonnull final ItemStack stack) {
-        // TODO
-        return super.getItemStackDisplayName(stack);
+        @Nonnull final TableData variant = getVariant(stack);
+        @Nonnull final String root = stack.getTranslationKey();
+        // Use special name, if present.
+        @Nonnull final StringBuilder variantBuilder = new StringBuilder(root);
+        variantBuilder.append('.').append(Objects.toString(variant.item.getRegistryName()).replace(':', '.'));
+        variantBuilder.append('.').append(variant.meta);
+        variantBuilder.append(".name");
+        @Nonnull final String variantKey = variantBuilder.toString();
+        if(I18n.canTranslate(variantKey)) return I18n.translateToLocal(variantKey);
+        // Generate name using regex.
+        else return I18n.translateToLocalFormatted(root + ".parts",
+                TextFormatting.getTextWithoutFormattingCodes(new ItemStack(variant.item, 1, variant.meta).getDisplayName())
+                .replaceAll(I18n.translateToLocal(root + ".regex"), "").trim(), super.getItemStackDisplayName(stack));
     }
 
     @Nonnull

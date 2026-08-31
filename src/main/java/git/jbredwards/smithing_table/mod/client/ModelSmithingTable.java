@@ -49,8 +49,8 @@ import java.util.function.Function;
 @SideOnly(Side.CLIENT)
 public final class ModelSmithingTable implements IModel
 {
-    @Nonnull
-    public static final ModelSmithingTable INSTANCE = new ModelSmithingTable(ModelLoader.MODEL_MISSING, ModelLoader.MODEL_MISSING, ModelLoader.MODEL_MISSING);
+    @Nonnull private static final ResourceLocation MISSING = new ResourceLocation("builtin/missing");
+    @Nonnull public static final ModelSmithingTable INSTANCE = new ModelSmithingTable(MISSING, MISSING, MISSING);
 
     @Nonnull
     public final ResourceLocation solid, tools, wood;

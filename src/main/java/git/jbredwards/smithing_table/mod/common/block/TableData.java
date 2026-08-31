@@ -41,6 +41,12 @@ public final class TableData
     }
 
     @Nonnull
+    @Override
+    public String toString() {
+        return serializeNBT().toString();
+    }
+
+    @Nonnull
     public NBTTagCompound serializeNBT() {
         @Nonnull final NBTTagCompound tag = new NBTTagCompound();
         tag.setString("PlanksId", Objects.toString(item.getRegistryName()));

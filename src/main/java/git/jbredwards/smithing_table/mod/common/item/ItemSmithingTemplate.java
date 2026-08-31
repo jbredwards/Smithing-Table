@@ -60,4 +60,12 @@ public final class ItemSmithingTemplate extends Item
         @Nonnull final String tooltipKey = getTranslationKey(stack) + ".tooltip";
         if(I18n.hasKey(tooltipKey)) for(@Nonnull final String line : I18n.format(tooltipKey).split("\\n")) tooltip.add(line.trim());
     }
+
+    @SideOnly(Side.CLIENT)
+    @Override
+    public boolean hasEffect(@Nonnull final ItemStack stack) {
+        if(super.hasEffect(stack)) return true; // Always apply enchantment glint if this has enchantments.
+        @Nullable final SmithingTemplate template = SmithingTemplate.deserialize(stack);
+        return template != null && template.hasEffect();
+    }
 }

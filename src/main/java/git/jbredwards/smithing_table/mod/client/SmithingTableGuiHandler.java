@@ -1,6 +1,7 @@
 package git.jbredwards.smithing_table.mod.client;
 
 import git.jbredwards.smithing_table.mod.SmithingTable;
+import git.jbredwards.smithing_table.mod.client.gui.GuiSmithingTable;
 import git.jbredwards.smithing_table.mod.common.inventory.ContainerSmithingTable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
