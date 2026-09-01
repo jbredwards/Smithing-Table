@@ -51,7 +51,7 @@ public final class SmithingContent
         @Nonnull
         @SideOnly(Side.CLIENT)
         @Override
-        public ItemStack createIcon() { return new ItemStack(SMITHING_TABLE); }
+        public ItemStack createIcon() { return Item.getItemFromBlock(SMITHING_TABLE).getDefaultInstance(); }
 
         @Override
         public boolean hasSearchBar() { return true; }

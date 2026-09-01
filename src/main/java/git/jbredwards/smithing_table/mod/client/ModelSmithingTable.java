@@ -125,15 +125,16 @@ public final class ModelSmithingTable implements IModel
             if(layer == null) {
                 builder.addAll(originalModel.getQuads(state, side, rand));
                 builder.addAll(tools.getQuads(state, side, rand));
-                builder.add(Loader.INSTANCE.cache.getUnchecked(Triple.of(wood, side, getTrueVariant(state))));
+                builder.add(Loader.INSTANCE.cache.getUnchecked(Triple.of(wood, side, getVariant(state))));
             }
 
             else {
                 if(layer == BlockRenderLayer.SOLID) builder.addAll(originalModel.getQuads(state, side, rand));
                 else if(layer == BlockRenderLayer.CUTOUT) builder.addAll(tools.getQuads(state, side, rand));
 
-                @Nonnull final TableData trueVariant = getTrueVariant(state);
-                if(trueVariant.getBlock().getRenderLayer() == layer) builder.add(Loader.INSTANCE.cache.getUnchecked(Triple.of(wood, side, trueVariant)));
+                @Nonnull final TableData variant = getVariant(state);
+                @Nonnull final IBlockState woodState = variant.getBlockState();
+                if(woodState.getBlock().canRenderInLayer(woodState, layer)) builder.add(Loader.INSTANCE.cache.getUnchecked(Triple.of(wood, side, variant)));
             }
 
             return builder.build();
@@ -152,7 +153,7 @@ public final class ModelSmithingTable implements IModel
         }
 
         @Nonnull
-        private TableData getTrueVariant(@Nullable final IBlockState state) {
+        private TableData getVariant(@Nullable final IBlockState state) {
             if(variant != null) return variant;
             else if(state instanceof IExtendedBlockState) {
                 @Nullable final TableData prop = ((IExtendedBlockState)state).getValue(UnlistedVariantProperty.INSTANCE);

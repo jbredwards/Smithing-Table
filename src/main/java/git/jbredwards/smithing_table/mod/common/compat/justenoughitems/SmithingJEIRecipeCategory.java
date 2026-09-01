@@ -12,7 +12,7 @@ import mezz.jei.config.Constants;
 import mezz.jei.startup.ForgeModIdHelper;
 import mezz.jei.util.Translator;
 import net.minecraft.client.Minecraft;
-import net.minecraft.item.ItemStack;
+import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
 
@@ -33,7 +33,7 @@ public class SmithingJEIRecipeCategory implements IRecipeCategory<SmithingJEIRec
     protected final IDrawable background, icon, slot, arrow;
     public SmithingJEIRecipeCategory(@Nonnull final IGuiHelper guiHelper) {
         background = guiHelper.createDrawable(Constants.RECIPE_GUI_VANILLA, 148, 0, 108, 28); // Blank.
-        icon = guiHelper.createDrawableIngredient(new ItemStack(SmithingContent.SMITHING_TABLE));
+        icon = guiHelper.createDrawableIngredient(Item.getItemFromBlock(SmithingContent.SMITHING_TABLE).getDefaultInstance());
         slot = guiHelper.getSlotDrawable();
         arrow = guiHelper.createDrawable(Constants.RECIPE_GUI_VANILLA, 75, 169, 24, 17);
     }
