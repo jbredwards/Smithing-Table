@@ -80,7 +80,7 @@ public class BlockSmithingTable extends BlockContainer
         @Nullable final TileEntity tile = worldIn.getTileEntity(pos);
         if(tile instanceof TileSmithingTable) {
             @Nonnull final IItemHandler inv = ((TileSmithingTable)tile).basicInventory;
-            for(int slot = 0; slot < inv.getSlots(); slot++) InventoryHelper.spawnItemStack(worldIn, pos.getX(), pos.getY(), pos.getZ(), inv.getStackInSlot(slot));
+            for(int slot = 0; slot < TileSmithingTable.OUTPUT; slot++) InventoryHelper.spawnItemStack(worldIn, pos.getX(), pos.getY(), pos.getZ(), inv.getStackInSlot(slot));
             worldIn.updateComparatorOutputLevel(pos, this);
         }
 
@@ -113,6 +113,12 @@ public class BlockSmithingTable extends BlockContainer
 
         ForgeEventFactory.fireBlockHarvesting(drops, worldIn, pos, state, EnchantmentHelper.getEnchantmentLevel(Enchantments.FORTUNE, stack), 1, EnchantmentHelper.getEnchantmentLevel(Enchantments.SILK_TOUCH, stack) > 0, player);
         for(@Nonnull final ItemStack drop : drops) spawnAsEntity(worldIn, pos, drop);
+    }
+
+    @Nonnull
+    @Override
+    public ItemStack getItem(@Nonnull final World worldIn, @Nonnull final BlockPos pos, @Nonnull final IBlockState state) {
+        return ItemSmithingTable.setVariant(super.getItem(worldIn, pos, state), TileSmithingTable.getVariant(worldIn, pos));
     }
 
     @Nonnull

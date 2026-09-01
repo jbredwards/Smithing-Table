@@ -4,14 +4,17 @@ import git.jbredwards.smithing_table.mod.SmithingTable;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.IForgeRegistryEntry;
+import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Objects;
 import java.util.function.Predicate;
 
@@ -127,5 +130,56 @@ public interface SmithingRecipe extends IForgeRegistryEntry<SmithingRecipe>
      */
     static boolean ignoreTemplate(@Nonnull final SmithingRecipe recipe) {
         return recipe.getTemplateIngredient().isEmpty() || !SmithingTable.templateEnabled() && !recipe.alwaysRequireSmithingTemplate();
+    }
+
+    /**
+     * Default {@code SmithingRecipe} implementation.
+     * @author jbred
+     *
+     */
+    @ApiStatus.AvailableSince("1.0.0")
+    class Impl extends IForgeRegistryEntry.Impl<SmithingRecipe> implements SmithingRecipe
+    {
+        @Nonnull private final Collection<SmithingTemplate> template;
+        @Nonnull private final Ingredient equipment, material;
+        @Nonnull private final ItemStack result;
+
+        private final boolean alwaysRequireSmithingTemplate;
+        public Impl(@Nonnull final Collection<SmithingTemplate> template, @Nonnull final Object equipment, @Nonnull final Object material, @Nonnull final ItemStack result, final boolean alwaysRequireSmithingTemplate) {
+            this.template = Collections.unmodifiableCollection(template);
+            this.equipment = Objects.requireNonNull(CraftingHelper.getIngredient(equipment), "Cannot parse equipment ingredient: " + equipment);
+            this.material = Objects.requireNonNull(CraftingHelper.getIngredient(material), "Cannot parse material ingredient: " + equipment);
+            this.result = Objects.requireNonNull(result);
+            this.alwaysRequireSmithingTemplate = alwaysRequireSmithingTemplate;
+        }
+
+        @Nonnull
+        @Override
+        public Collection<SmithingTemplate> getTemplateIngredient() {
+            return this.template;
+        }
+
+        @Override
+        public boolean alwaysRequireSmithingTemplate() {
+            return this.alwaysRequireSmithingTemplate;
+        }
+
+        @Nonnull
+        @Override
+        public Ingredient getEquipmentIngredient() {
+            return this.equipment;
+        }
+
+        @Nonnull
+        @Override
+        public Ingredient getMaterialIngredient() {
+            return this.material;
+        }
+
+        @Nonnull
+        @Override
+        public ItemStack getResult() {
+            return this.result;
+        }
     }
 }

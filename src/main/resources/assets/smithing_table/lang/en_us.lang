@@ -1,3 +1,5 @@
+smithing_table:jei_category=Smithing
+
 tile.smithing_table.table.name=Smithing Table
 tile.smithing_table.table.parts=%s %s
 tile.smithing_table.table.regex=Wood Planks|Planks

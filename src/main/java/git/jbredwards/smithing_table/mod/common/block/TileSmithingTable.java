@@ -32,15 +32,17 @@ import javax.annotation.Nullable;
  */
 public class TileSmithingTable extends TileEntity implements IWorldNameable
 {
+    public static final int TEMPLATE = 0, EQUIPMENT = 1, MATERIAL = 2, OUTPUT = 3;
+
     @Nonnull
     public final ItemStackHandler basicInventory = new ItemStackHandler(4) {
         @Override
         public boolean isItemValid(final int slot, @Nonnull final ItemStack stack) {
             switch(slot) {
-                case 0: return SmithingTable.templateEnabled() &&
-                               SmithingRecipe.partialMatch(stack, getStackInSlot(1), getStackInSlot(2), recipe -> false);
-                case 1: return SmithingRecipe.partialMatch(getStackInSlot(0), stack, getStackInSlot(2), SmithingRecipe::ignoreTemplate);
-                case 2: return SmithingRecipe.partialMatch(getStackInSlot(0), getStackInSlot(1), stack, SmithingRecipe::ignoreTemplate);
+                case TEMPLATE:  return SmithingTable.templateEnabled() &&
+                                       SmithingRecipe.partialMatch(stack, getStackInSlot(1), getStackInSlot(2), recipe -> false);
+                case EQUIPMENT: return SmithingRecipe.partialMatch(getStackInSlot(0), stack, getStackInSlot(2), SmithingRecipe::ignoreTemplate);
+                case MATERIAL:  return SmithingRecipe.partialMatch(getStackInSlot(0), getStackInSlot(1), stack, SmithingRecipe::ignoreTemplate);
             }
 
             return false;
@@ -85,30 +87,30 @@ public class TileSmithingTable extends TileEntity implements IWorldNameable
             @Nonnull
             @Override
             public ItemStack extractItem(final int slot, final int amount, final boolean simulate) {
-                if(amount <= 0 || slot > 3) return ItemStack.EMPTY;
-                else if(slot < 3) return facing == null ? basicInventory.extractItem(slot, amount, simulate) : ItemStack.EMPTY;
+                if(amount <= 0 || slot > OUTPUT) return ItemStack.EMPTY;
+                else if(slot < OUTPUT) return facing == null ? basicInventory.extractItem(slot, amount, simulate) : ItemStack.EMPTY;
                 // Find craft for automation.
                 @Nullable final SmithingRecipe recipe = SmithingRecipe.lookupResult(getStackInSlot(0), getStackInSlot(1), getStackInSlot(2));
-                if(recipe == null) return basicInventory.extractItem(3, amount, simulate);
+                if(recipe == null) return basicInventory.extractItem(OUTPUT, amount, simulate);
                 @Nonnull final ItemStack crafted = recipe.getCraftedResult(basicInventory);
-                if(crafted.isEmpty()) return basicInventory.extractItem(3, amount, simulate);
+                if(crafted.isEmpty()) return basicInventory.extractItem(OUTPUT, amount, simulate);
                 // Account for extra items from previous crafts.
-                @Nonnull final ItemStack extras = getStackInSlot(3);
+                @Nonnull final ItemStack extras = getStackInSlot(OUTPUT);
                 final int skipped;
                 if(extras.isEmpty()) skipped = 0;
                 else if(extras.getCount() < amount && ItemHandlerHelper.canItemStacksStack(crafted, extras)) skipped = extras.getCount();
-                else return basicInventory.extractItem(3, amount, simulate);
+                else return basicInventory.extractItem(OUTPUT, amount, simulate);
                 // Find number of items to craft.
                 final int crafts = MathHelper.ceil(getSmithingOperations(recipe, amount - skipped));
                 crafted.setCount(Math.min(crafts * recipe.getResult().getCount() + skipped, amount));
                 // Consume ingredients.
                 if(!simulate) {
-                    if(!SmithingRecipe.ignoreTemplate(recipe)) getStackInSlot(0).shrink(crafts);
-                    getStackInSlot(1).shrink(crafts);
-                    getStackInSlot(2).shrink(crafts);
+                    if(!SmithingRecipe.ignoreTemplate(recipe)) getStackInSlot(TEMPLATE).shrink(crafts);
+                    getStackInSlot(EQUIPMENT).shrink(crafts);
+                    getStackInSlot(MATERIAL).shrink(crafts);
                     // Store extras within internal output slot, and update comparator state.
                     final int newExtras = Math.max(0, crafts * recipe.getResult().getCount() + skipped - amount);
-                    basicInventory.setStackInSlot(3, ItemHandlerHelper.copyStackWithSize(crafted, newExtras));
+                    basicInventory.setStackInSlot(OUTPUT, ItemHandlerHelper.copyStackWithSize(crafted, newExtras));
                 }
 
                 return crafted;

@@ -2,6 +2,7 @@ package git.jbredwards.smithing_table.mod;
 
 import git.jbredwards.smithing_table.Tags;
 import git.jbredwards.smithing_table.api.SmithingContent;
+import git.jbredwards.smithing_table.api.SmithingRecipe;
 import git.jbredwards.smithing_table.mod.client.ModelSmithingTable;
 import git.jbredwards.smithing_table.mod.client.ModelSmithingTemplate;
 import git.jbredwards.smithing_table.mod.common.block.BlockSmithingTable;
@@ -13,6 +14,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
@@ -28,6 +30,7 @@ import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.registries.RegistryBuilder;
 
 import javax.annotation.Nonnull;
+import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
 
@@ -80,6 +83,12 @@ final class RegistryHandler
     static void registerRegistries(@Nonnull final RegistryEvent.NewRegistry event) throws ClassNotFoundException {
         new RegistryBuilder().setType(Class.forName("git.jbredwards.smithing_table.api.SmithingRecipe", false, RegistryHandler.class.getClassLoader())).setName(new ResourceLocation(SmithingTable.MOD_ID, "recipes")).allowModification().disableSaving().create();
         new RegistryBuilder().setType(Class.forName("git.jbredwards.smithing_table.api.SmithingTemplate", false, RegistryHandler.class.getClassLoader())).setName(new ResourceLocation(SmithingTable.MOD_ID, "templates")).create();
+    }
+
+    @SubscribeEvent
+    static void registerSmithing(@Nonnull final RegistryEvent.Register<SmithingRecipe> event) {
+        // A recipe for testing purposes. Disabled outside of dev.
+        event.getRegistry().register(new SmithingRecipe.Impl(Collections.emptyList(), Items.IRON_AXE, "gemDiamond", new ItemStack(Items.DIAMOND_AXE), false).setRegistryName("example"));
     }
 
     @SubscribeEvent

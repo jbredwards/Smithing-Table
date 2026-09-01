@@ -37,11 +37,9 @@ public class ItemSmithingTable extends ItemBlock
         @Nonnull final TableData variant = getVariant(stack);
         @Nonnull final String root = stack.getTranslationKey();
         // Use special name, if present.
-        @Nonnull final StringBuilder variantBuilder = new StringBuilder(root);
-        variantBuilder.append('.').append(Objects.toString(variant.item.getRegistryName()).replace(':', '.'));
-        variantBuilder.append('.').append(variant.meta);
-        variantBuilder.append(".name");
-        @Nonnull final String variantKey = variantBuilder.toString();
+        @Nonnull final String variantKey = root +
+                '.' + Objects.toString(variant.item.getRegistryName()).replace(':', '.') +
+                '.' + variant.meta + ".name";
         if(I18n.canTranslate(variantKey)) return I18n.translateToLocal(variantKey);
         // Generate name using regex.
         else return I18n.translateToLocalFormatted(root + ".parts",

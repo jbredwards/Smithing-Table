@@ -38,8 +38,8 @@ public enum SmithingTableGuiHandler implements IGuiHandler
     @Override
     public Object getClientGuiElement(final int ID, @Nonnull final EntityPlayer player, @Nonnull final World world, final int x, final int y, final int z) {
         switch(ID) {
-            case 1: return new GuiSmithingTable.New(player, world, x, y, z);
-            case 2: return new GuiSmithingTable.Old(player, world, x, y, z);
+            case 1:
+            case 2: return new GuiSmithingTable(player, world, x, y, z);
             default: return null;
         }
     }
