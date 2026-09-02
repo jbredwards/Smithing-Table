@@ -1,16 +1,22 @@
 package git.jbredwards.smithing_table.mod.common.item;
 
+import biomesoplenty.api.block.BOPBlocks;
+import biomesoplenty.api.enums.BOPWoods;
 import git.jbredwards.smithing_table.mod.SmithingTable;
 import git.jbredwards.smithing_table.mod.common.block.TableData;
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Blocks;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.translation.I18n;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.fml.common.Optional;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.oredict.OreDictionary;
 
 import javax.annotation.Nonnull;
@@ -92,5 +98,18 @@ public class ItemSmithingTable extends ItemBlock
     @Nonnull
     public static ItemStack setVariant(@Nonnull final ItemStack stack, @Nonnull final ItemStack variant) {
         return setVariant(stack, new TableData(variant.getItem(), variant.getMetadata()));
+    }
+
+    /**
+     * Use BOP redwood planks as default client-side variant for item.
+     * <br>Since it looks similar to the wood texture used by Vanilla.
+     */
+    @Optional.Method(modid = "biomesoplenty")
+    @Nonnull
+    @SideOnly(Side.CLIENT)
+    @Override
+    public ItemStack getDefaultInstance() {
+        return setVariant(new ItemStack(this),
+                new TableData(Item.getItemFromBlock(BOPBlocks.planks_0), BOPWoods.REDWOOD.ordinal()));
     }
 }
