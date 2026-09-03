@@ -1,14 +1,14 @@
 package git.jbredwards.smithing_table.mod.common.compat.justenoughitems;
 
-import git.jbredwards.smithing_table.Tags;
 import git.jbredwards.smithing_table.api.SmithingContent;
+import git.jbredwards.smithing_table.mod.SmithingTable;
+import git.jbredwards.smithing_table.mod.client.gui.GuiSmithingTable;
 import git.jbredwards.smithing_table.mod.common.block.TileSmithingTable;
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.IRecipeCategory;
-import mezz.jei.config.Constants;
 import mezz.jei.startup.ForgeModIdHelper;
 import mezz.jei.util.Translator;
 import net.minecraft.client.Minecraft;
@@ -27,15 +27,15 @@ import javax.annotation.Nullable;
 public class SmithingJEIRecipeCategory implements IRecipeCategory<SmithingJEIRecipeWrapper>
 {
     @Nonnull
-    public static final String ID = Tags.MOD_ID + ":jei_category";
+    public static final String ID = SmithingTable.MOD_ID + ":jei_category";
 
     @Nonnull
     protected final IDrawable background, icon, slot, arrow;
     public SmithingJEIRecipeCategory(@Nonnull final IGuiHelper guiHelper) {
-        background = guiHelper.createDrawable(Constants.RECIPE_GUI_VANILLA, 148, 0, 108, 28); // Blank.
+        background = guiHelper.createDrawable(GuiSmithingTable.TEXTURE, 0, 228, 108, 28); // Blank.
         icon = guiHelper.createDrawableIngredient(Item.getItemFromBlock(SmithingContent.SMITHING_TABLE).getDefaultInstance());
         slot = guiHelper.getSlotDrawable();
-        arrow = guiHelper.createDrawable(Constants.RECIPE_GUI_VANILLA, 75, 169, 24, 17);
+        arrow = guiHelper.createDrawable(GuiSmithingTable.TEXTURE, 67, 48, 24, 17);
     }
 
     @Nonnull
@@ -47,7 +47,7 @@ public class SmithingJEIRecipeCategory implements IRecipeCategory<SmithingJEIRec
     @Nonnull
     @Override
     public String getModName() {
-        return Tags.MOD_NAME;
+        return SmithingTable.MOD_NAME;
     }
 
     @Nonnull
@@ -74,7 +74,7 @@ public class SmithingJEIRecipeCategory implements IRecipeCategory<SmithingJEIRec
         slot.draw(minecraft, 18, 6);
         slot.draw(minecraft, 36, 6);
         slot.draw(minecraft, 90, 6);
-        arrow.draw(minecraft, 60, 6);
+        arrow.draw(minecraft, 60, 7);
     }
 
     @Override

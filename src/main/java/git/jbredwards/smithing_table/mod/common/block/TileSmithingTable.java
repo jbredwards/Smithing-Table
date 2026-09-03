@@ -2,6 +2,7 @@ package git.jbredwards.smithing_table.mod.common.block;
 
 import com.google.common.primitives.Floats;
 import git.jbredwards.smithing_table.api.SmithingRecipe;
+import git.jbredwards.smithing_table.api.SmithingTemplate;
 import git.jbredwards.smithing_table.mod.SmithingTable;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -49,7 +50,76 @@ public class TileSmithingTable extends TileEntity implements IWorldNameable
         }
 
         @Override
-        protected void onContentsChanged(final int slot) { markDirty(); }
+        protected void onContentsChanged(final int slot) {
+            markDirty();
+        }
+    };
+
+    @Nonnull
+    public final IItemHandler processor = new IItemHandler() {
+        @Nullable
+        private SmithingRecipe recipe;
+
+        @Override
+        public int getSlots() {
+            return basicInventory.getSlots();
+        }
+
+        @Override
+        public int getSlotLimit(final int slot) {
+            return basicInventory.getSlotLimit(slot);
+        }
+
+        @Nonnull
+        @Override
+        public ItemStack getStackInSlot(final int slot) {
+            return slot == OUTPUT ? extractItem(OUTPUT, getSlotLimit(OUTPUT), true) : basicInventory.getStackInSlot(slot);
+        }
+
+        @Nonnull
+        @Override
+        public ItemStack insertItem(final int slot, @Nonnull final ItemStack stack, final boolean simulate) {
+            return isItemValid(slot, stack) ? basicInventory.insertItem(slot, stack, simulate) : stack;
+        }
+
+        @Nonnull
+        @Override
+        public ItemStack extractItem(final int slot, final int amount, final boolean simulate) {
+            if(amount <= 0 || slot > OUTPUT) return ItemStack.EMPTY;
+            else if(slot < OUTPUT) return basicInventory.extractItem(slot, amount, simulate);
+            // Find craft for automation.
+            @Nonnull final ItemStack template = getStackInSlot(TEMPLATE), equipment = getStackInSlot(EQUIPMENT), material = getStackInSlot(MATERIAL);
+            if(recipe != null && !SmithingRecipe.testResult(recipe, SmithingTemplate.deserialize(template), equipment, material)) recipe = null;
+            if(recipe == null) recipe = SmithingRecipe.lookupResult(template, equipment, material);
+            if(recipe == null) return basicInventory.extractItem(OUTPUT, amount, simulate);
+            @Nonnull final ItemStack crafted = recipe.getCraftedResult(basicInventory);
+            if(crafted.isEmpty()) return basicInventory.extractItem(OUTPUT, amount, simulate);
+            // Account for extra items from previous crafts.
+            @Nonnull final ItemStack extras = basicInventory.getStackInSlot(OUTPUT);
+            final int skipped;
+            if(extras.isEmpty()) skipped = 0;
+            else if(extras.getCount() < amount && ItemHandlerHelper.canItemStacksStack(crafted, extras)) skipped = extras.getCount();
+            else return basicInventory.extractItem(OUTPUT, amount, simulate);
+            // Find number of items to craft.
+            final int crafts = MathHelper.ceil(getSmithingOperations(recipe, amount - skipped));
+            crafted.setCount(Math.min(crafts * recipe.getResult().getCount() + skipped, amount));
+            // Consume ingredients.
+            if(!simulate) {
+                if(!SmithingRecipe.ignoreTemplate(recipe)) template.shrink(crafts);
+                equipment.shrink(crafts);
+                material.shrink(crafts);
+                // Store extras within internal output slot, and update comparator state.
+                final int newExtras = Math.max(0, crafts * recipe.getResult().getCount() + skipped - amount);
+                basicInventory.setStackInSlot(OUTPUT, ItemHandlerHelper.copyStackWithSize(crafted, newExtras));
+            }
+
+            return crafted;
+        }
+
+        @Override
+        public boolean isItemValid(final int slot, @Nonnull final ItemStack stack) {
+            return basicInventory.isItemValid(slot, stack);
+        }
     };
 
     public float getSmithingOperations(@Nonnull final SmithingRecipe recipe, final float maxOutputs) {
@@ -69,56 +139,32 @@ public class TileSmithingTable extends TileEntity implements IWorldNameable
         if(capability != CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) return super.getCapability(capability, facing);
         else return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(new IItemHandler() {
             @Override
-            public int getSlots() { return basicInventory.getSlots(); }
-
-            @Override
-            public int getSlotLimit(final int slot) { return basicInventory.getSlotLimit(slot); }
+            public int getSlots() {
+                return processor.getSlots();
+            }
 
             @Nonnull
             @Override
-            public ItemStack getStackInSlot(final int slot) { return basicInventory.getStackInSlot(slot); }
+            public ItemStack getStackInSlot(final int slot) {
+                return processor.getStackInSlot(slot);
+            }
 
             @Nonnull
             @Override
             public ItemStack insertItem(final int slot, @Nonnull final ItemStack stack, final boolean simulate) {
-                return isItemValid(slot, stack) ? basicInventory.insertItem(slot, stack, simulate) : stack;
+                return processor.insertItem(slot, stack, simulate);
             }
 
             @Nonnull
             @Override
             public ItemStack extractItem(final int slot, final int amount, final boolean simulate) {
-                if(amount <= 0 || slot > OUTPUT) return ItemStack.EMPTY;
-                else if(slot < OUTPUT) return facing == null ? basicInventory.extractItem(slot, amount, simulate) : ItemStack.EMPTY;
-                // Find craft for automation.
-                @Nullable final SmithingRecipe recipe = SmithingRecipe.lookupResult(getStackInSlot(0), getStackInSlot(1), getStackInSlot(2));
-                if(recipe == null) return basicInventory.extractItem(OUTPUT, amount, simulate);
-                @Nonnull final ItemStack crafted = recipe.getCraftedResult(basicInventory);
-                if(crafted.isEmpty()) return basicInventory.extractItem(OUTPUT, amount, simulate);
-                // Account for extra items from previous crafts.
-                @Nonnull final ItemStack extras = getStackInSlot(OUTPUT);
-                final int skipped;
-                if(extras.isEmpty()) skipped = 0;
-                else if(extras.getCount() < amount && ItemHandlerHelper.canItemStacksStack(crafted, extras)) skipped = extras.getCount();
-                else return basicInventory.extractItem(OUTPUT, amount, simulate);
-                // Find number of items to craft.
-                final int crafts = MathHelper.ceil(getSmithingOperations(recipe, amount - skipped));
-                crafted.setCount(Math.min(crafts * recipe.getResult().getCount() + skipped, amount));
-                // Consume ingredients.
-                if(!simulate) {
-                    if(!SmithingRecipe.ignoreTemplate(recipe)) getStackInSlot(TEMPLATE).shrink(crafts);
-                    getStackInSlot(EQUIPMENT).shrink(crafts);
-                    getStackInSlot(MATERIAL).shrink(crafts);
-                    // Store extras within internal output slot, and update comparator state.
-                    final int newExtras = Math.max(0, crafts * recipe.getResult().getCount() + skipped - amount);
-                    basicInventory.setStackInSlot(OUTPUT, ItemHandlerHelper.copyStackWithSize(crafted, newExtras));
-                }
-
-                return crafted;
+                if(amount <= 0 || slot > OUTPUT || slot < OUTPUT && facing != null) return ItemStack.EMPTY;
+                else return processor.extractItem(slot, amount, simulate);
             }
 
             @Override
-            public boolean isItemValid(final int slot, @Nonnull final ItemStack stack) {
-                return basicInventory.isItemValid(slot, stack);
+            public int getSlotLimit(final int slot) {
+                return processor.getSlotLimit(slot);
             }
         });
     }
@@ -126,6 +172,9 @@ public class TileSmithingTable extends TileEntity implements IWorldNameable
     // -----------------------------
     // Custom Inventory Display Name
     // -----------------------------
+
+    @Nonnull
+    public static final String TRANSLATION_KEY = SmithingTable.MOD_ID + ".container.smithingTable";
 
     @Nonnull
     protected String customName = "";
@@ -137,7 +186,7 @@ public class TileSmithingTable extends TileEntity implements IWorldNameable
     @Nonnull
     @Override
     public String getName() {
-        return hasCustomName() ? customName : (SmithingTable.MOD_ID + ".container.smithingTable");
+        return hasCustomName() ? customName : TRANSLATION_KEY;
     }
 
     @Override

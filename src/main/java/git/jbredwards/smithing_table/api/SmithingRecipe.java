@@ -100,11 +100,19 @@ public interface SmithingRecipe extends IForgeRegistryEntry<SmithingRecipe>
 
         @Nullable final SmithingTemplate st = SmithingTemplate.deserialize(template);
         return REGISTRY.getValuesCollection().stream()
-                .filter(recipe
-                        -> (ignoreTemplate(recipe) || !template.isEmpty() && recipe.getTemplateIngredient().contains(st))
-                        && recipe.getEquipmentIngredient().test(equipment) && recipe.getMaterialIngredient().test(material))
+                .filter(recipe -> testResult(recipe, st, equipment, material))
                 .findFirst()
                 .orElse(null);
+    }
+
+    /**
+     * @return True if the recipe can be performed with the provided ingredients.
+     * @throws NullPointerException If any parameters are null.
+     * @since 1.0.0
+     */
+    static boolean testResult(@Nonnull final SmithingRecipe recipe, @Nullable final SmithingTemplate template, @Nonnull final ItemStack equipment, @Nonnull final ItemStack material) {
+        return !equipment.isEmpty() && !material.isEmpty() && (ignoreTemplate(recipe) || template != null && recipe.getTemplateIngredient().contains(template))
+                && recipe.getEquipmentIngredient().test(equipment) && recipe.getMaterialIngredient().test(material);
     }
 
     /**
@@ -113,8 +121,6 @@ public interface SmithingRecipe extends IForgeRegistryEntry<SmithingRecipe>
      * @since 1.0.0
      */
     static boolean partialMatch(@Nonnull final ItemStack template, @Nonnull final ItemStack equipment, @Nonnull final ItemStack material, @Nonnull final Predicate<SmithingRecipe> ignoreTemplate) {
-        if(equipment.isEmpty() && material.isEmpty()) return true;
-
         @Nullable final SmithingTemplate st = SmithingTemplate.deserialize(template);
         return REGISTRY.getValuesCollection().stream().parallel()
                 .anyMatch(recipe

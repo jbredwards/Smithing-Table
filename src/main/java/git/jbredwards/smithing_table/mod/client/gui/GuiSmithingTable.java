@@ -6,7 +6,6 @@ import git.jbredwards.smithing_table.mod.common.inventory.ContainerSmithingTable
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.item.EntityArmorStand;
 import net.minecraft.entity.player.EntityPlayer;
@@ -16,6 +15,9 @@ import net.minecraft.inventory.IContainerListener;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.world.IWorldNameable;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -30,14 +32,18 @@ import javax.annotation.Nonnull;
 @SideOnly(Side.CLIENT)
 public class GuiSmithingTable extends GuiContainer implements IContainerListener
 {
-    private static final int INTERNAL_MOUSE_SCALE = 40;
-    protected static final float ANGLE_X = 45 * INTERNAL_MOUSE_SCALE, ANGLE_Y = -1 * INTERNAL_MOUSE_SCALE;
+    @Nonnull public static final ResourceLocation TEXTURE = new ResourceLocation(SmithingTable.MOD_ID, "textures/gui/smithing.png");
 
+    private static final int INTERNAL_MOUSE_SCALE = 40;
+    protected static final float ANGLE_X = 60 * INTERNAL_MOUSE_SCALE, ANGLE_Y = -1.5f * INTERNAL_MOUSE_SCALE;
+
+    @Nonnull protected final ITextComponent name;
     @Nonnull protected final EntityArmorStand armorStand;
     @Nonnull protected final EntityPlayer player;
 
     public GuiSmithingTable(@Nonnull final EntityPlayer playerIn, @Nonnull final World worldIn, final int x, final int y, final int z) {
         super(new ContainerSmithingTable(playerIn, worldIn, x, y, z));
+        name = ((IWorldNameable)inventorySlots).getDisplayName();
         armorStand = new EntityArmorStand(worldIn, x, y, z);
         armorStand.setSilent(true);
         armorStand.setShowArms(true);
@@ -85,17 +91,31 @@ public class GuiSmithingTable extends GuiContainer implements IContainerListener
     public void drawScreen(final int mouseX, final int mouseY, final float partialTicks) {
         drawDefaultBackground();
         super.drawScreen(mouseX, mouseY, partialTicks);
+
+        GlStateManager.disableLighting();
+        GlStateManager.disableBlend();
+        renderHoveredToolTip(mouseX, mouseY);
     }
 
     @Override
     protected void drawGuiContainerBackgroundLayer(final float partialTicks, final int mouseX, final int mouseY) {
-        GuiInventory.drawEntityOnScreen(guiLeft + 121, guiTop + 20, 25, ANGLE_X, ANGLE_Y, armorStand);
+        GlStateManager.color(1, 1, 1);
+        mc.getTextureManager().bindTexture(TEXTURE);
+        drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize);
+
+        if((inventorySlots.getSlot(TileSmithingTable.EQUIPMENT).getHasStack()
+        || inventorySlots.getSlot(TileSmithingTable.MATERIAL).getHasStack())
+        && !inventorySlots.getSlot(TileSmithingTable.OUTPUT).getHasStack()) {
+            drawTexturedModalRect(guiLeft + 68, guiTop + 49, 176, 0, 22, 15);
+        }
+
+        GuiInventory.drawEntityOnScreen(guiLeft + 145, guiTop + 65, 25, ANGLE_X, ANGLE_Y, armorStand);
     }
 
     @Override
     protected void drawGuiContainerForegroundLayer(final int mouseX, final int mouseY) {
         GlStateManager.disableBlend();
-        fontRenderer.drawString(I18n.format(SmithingTable.MOD_ID + ".container.smithingTable"), 60, 18, 4210752);
+        fontRenderer.drawString(name.getUnformattedText(), 44, 15, 4210752);
         fontRenderer.drawString(player.inventory.getDisplayName().getUnformattedText(), 8, ySize - 94, 4210752);
     }
 }

@@ -1,18 +1,19 @@
 package git.jbredwards.smithing_table.mod;
 
-import git.jbredwards.smithing_table.Tags;
 import git.jbredwards.smithing_table.api.SmithingContent;
 import git.jbredwards.smithing_table.api.SmithingRecipe;
 import git.jbredwards.smithing_table.mod.client.ModelSmithingTable;
 import git.jbredwards.smithing_table.mod.client.ModelSmithingTemplate;
 import git.jbredwards.smithing_table.mod.common.block.BlockSmithingTable;
 import git.jbredwards.smithing_table.mod.common.block.TableData;
+import git.jbredwards.smithing_table.mod.common.inventory.ContainerSmithingTable;
 import git.jbredwards.smithing_table.mod.common.item.ItemSmithingTable;
 import git.jbredwards.smithing_table.mod.common.item.ItemSmithingTemplate;
 import git.jbredwards.smithing_table.mod.common.block.TileSmithingTable;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
@@ -21,6 +22,7 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
+import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.event.RegistryEvent;
@@ -67,7 +69,7 @@ final class RegistryHandler
         variants.remove(TableData.DEFAULT);
 
         // Register a recipe for each variant.
-        @Nonnull final ResourceLocation group = new ResourceLocation(Tags.MOD_ID, "tables");
+        @Nonnull final ResourceLocation group = new ResourceLocation(SmithingTable.MOD_ID, "tables");
         for(@Nonnull final TableData variant : variants) event.getRegistry().register(new ShapedOreRecipe(group,
                 ItemSmithingTable.setVariant(new ItemStack(SmithingContent.SMITHING_TABLE), variant),
                 "II", "##", "##", 'I', "ingotIron", '#', new ItemStack(variant.item, 1, variant.meta)).setRegistryName(
@@ -94,5 +96,13 @@ final class RegistryHandler
     @SubscribeEvent
     static void registerSounds(@Nonnull final RegistryEvent.Register<SoundEvent> event) {
         event.getRegistry().register(new SoundEvent(new ResourceLocation(SmithingTable.MOD_ID, "blocks.smithing_table.use")).setRegistryName("blocks.smithing_table.use"));
+    }
+
+    @SubscribeEvent
+    static void registerTextures(@Nonnull final TextureStitchEvent.Pre event) {
+        if(event.getMap() == Minecraft.getMinecraft().getTextureMapBlocks()) {
+            event.getMap().registerSprite(ContainerSmithingTable.MATERIAL_OVERLAY);
+            event.getMap().registerSprite(ContainerSmithingTable.TEMPLATE_OVERLAY);
+        }
     }
 }

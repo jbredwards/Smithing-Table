@@ -2,8 +2,8 @@ package git.jbredwards.smithing_table.mod.common.compat;
 
 import com.cleanroommc.assetmover.AssetMoverAPI;
 import com.google.common.collect.ImmutableMap;
-import git.jbredwards.smithing_table.Tags;
 import git.jbredwards.smithing_table.api.SmithingContent;
+import git.jbredwards.smithing_table.mod.SmithingTable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.ISoundEventAccessor;
 import net.minecraft.client.audio.Sound;
@@ -34,9 +34,9 @@ public final class AssetMoverHandler
 {
     public static void construct() {
         AssetMoverAPI.fromMinecraft("1.18.2", ImmutableMap.<String, String>builder()
-                .put("assets/minecraft/sounds/block/smithing_table/smithing_table1.ogg", String.format("assets/%s/sounds/use1.ogg", Tags.MOD_ID))
-                .put("assets/minecraft/sounds/block/smithing_table/smithing_table2.ogg", String.format("assets/%s/sounds/use2.ogg", Tags.MOD_ID))
-                .put("assets/minecraft/sounds/block/smithing_table/smithing_table3.ogg", String.format("assets/%s/sounds/use3.ogg", Tags.MOD_ID))
+                .put("assets/minecraft/sounds/block/smithing_table/smithing_table1.ogg", String.format("assets/%s/sounds/use1.ogg", SmithingTable.MOD_ID))
+                .put("assets/minecraft/sounds/block/smithing_table/smithing_table2.ogg", String.format("assets/%s/sounds/use2.ogg", SmithingTable.MOD_ID))
+                .put("assets/minecraft/sounds/block/smithing_table/smithing_table3.ogg", String.format("assets/%s/sounds/use3.ogg", SmithingTable.MOD_ID))
                 .build());
         // TODO: Add config to disable AssetMover sound override.
         MinecraftForge.EVENT_BUS.register(AssetMoverHandler.class);
@@ -49,9 +49,9 @@ public final class AssetMoverHandler
             @Nonnull final List<ISoundEventAccessor<Sound>> sounds = ObfuscationReflectionHelper.getPrivateValue(SoundEventAccessor.class, accessor, "field_188716_a");
             @Nonnull final List<ISoundEventAccessor<Sound>> newSounds = new ArrayList<>();
 
-            addAccessorIfPresent(newSounds, new ResourceLocation(Tags.MOD_ID, "use1"));
-            addAccessorIfPresent(newSounds, new ResourceLocation(Tags.MOD_ID, "use2"));
-            addAccessorIfPresent(newSounds, new ResourceLocation(Tags.MOD_ID, "use3"));
+            addAccessorIfPresent(newSounds, new ResourceLocation(SmithingTable.MOD_ID, "use1"));
+            addAccessorIfPresent(newSounds, new ResourceLocation(SmithingTable.MOD_ID, "use2"));
+            addAccessorIfPresent(newSounds, new ResourceLocation(SmithingTable.MOD_ID, "use3"));
 
             if(!newSounds.isEmpty()) {
                 sounds.clear();
