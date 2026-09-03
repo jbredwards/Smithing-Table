@@ -1,5 +1,25 @@
+cfg.smithing_table.automation=Automation
+cfg.smithing_table.automation.tooltip=Whether items may be inserted into or extracted from a smithing table, aka "IItemHandler support".\n- Any extraction will automatically perform the recipe and extract the resulting item(s).\n- Non-output items cannot be extracted, to make automation require no item filters.\n- Only accepts items that are valid for a recipe, and automatically puts them into the correct slots.
+cfg.smithing_table.automationSound=Automation Sound
+cfg.smithing_table.automationSound.tooltip=Whether the "smithing table use" sound plays when an item is automatically smithed.
+cfg.smithing_table.gui.armorStand=Gui Armor Stand
+cfg.smithing_table.gui.armorStand.tooltip=Whether a preview armor stand should render in the smithing table gui.
+cfg.smithing_table.gui.armorStandBackground=Gui Armor Stand Background
+cfg.smithing_table.gui.armorStandBackground.tooltip=Whether the smithing table gui should be expanded to make room for the preview armor stand.
+cfg.smithing_table.gui.hammer=Gui Hammer
+cfg.smithing_table.gui.hammer.ANVIL=Anvil
+cfg.smithing_table.gui.hammer.NONE=None
+cfg.smithing_table.gui.hammer.SMITHING=Smithing
+cfg.smithing_table.gui.hammer.tooltip=The hammer texture that should be drawn in the smithing table gui.
+cfg.smithing_table.gui.materialOverlay=Gui Material Slot Overlay
+cfg.smithing_table.gui.materialOverlay.tooltip=Whether an overlay texture should be drawn over the material slot in the smithing table gui.
+cfg.smithing_table.gui.templateOverlay=Gui Template Slot Overlay
+cfg.smithing_table.gui.templateOverlay.tooltip=Whether an overlay texture should be drawn over the template slot in the smithing table gui.
+
+itemGroup.smithing_table:tab=Smithing Table
 smithing_table.container.smithingTable=Smithing Table
 smithing_table:jei_category=Smithing
+subtitle.smithing_table.use=Smithing Table used
 
 tile.smithing_table.table.name=Smithing Table
 tile.smithing_table.table.parts=%s %s

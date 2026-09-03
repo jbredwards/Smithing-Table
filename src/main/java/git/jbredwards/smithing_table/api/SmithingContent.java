@@ -1,91 +1,68 @@
 package git.jbredwards.smithing_table.api;
 
-import com.google.common.collect.ImmutableList;
 import git.jbredwards.smithing_table.mod.SmithingTable;
+import git.jbredwards.smithing_table.mod.common.block.BlockSmithingTable;
+import git.jbredwards.smithing_table.mod.common.item.ItemSmithingTemplate;
 import net.minecraft.block.Block;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.block.material.MapColor;
+import net.minecraft.block.material.Material;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
-import net.minecraftforge.client.event.ModelBakeEvent;
-import net.minecraftforge.client.event.TextureStitchEvent;
-import net.minecraftforge.client.model.ForgeBlockStateV1;
-import net.minecraftforge.client.model.ItemLayerModel;
-import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.common.model.IModelState;
-import net.minecraftforge.common.model.TRSRTransformation;
-import net.minecraftforge.fml.common.eventhandler.EventPriority;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nonnull;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
- * All content added by this mod. Fields are populated during Forge registry events.
+ * All content added by this mod.
  *
- * @since 1.0.0
  * @author jbred
  *
  */
-@GameRegistry.ObjectHolder(SmithingTable.MOD_ID)
+@ApiStatus.AvailableSince("1.0.0")
 public final class SmithingContent
 {
-    @GameRegistry.ObjectHolder("blocks.smithing_table.use")
-    public static final SoundEvent BLOCK_SMITHING_TABLE_USE = holder();
-
-    @GameRegistry.ObjectHolder("table")
-    public static final Block SMITHING_TABLE = holder();
-
-    @GameRegistry.ObjectHolder("template")
-    public static final Item SMITHING_TEMPLATE = holder();
-
+    /**
+     * The sound played when a smithing table smiths something.
+     */
+    @ApiStatus.AvailableSince("1.0.0")
     @Nonnull
-    public static CreativeTabs CREATIVE_TAB = new CreativeTabs(SmithingTable.MOD_ID + ":tab") {
+    public static final SoundEvent BLOCK_SMITHING_TABLE_USE = new SoundEvent(new ResourceLocation(SmithingTable.MOD_ID, "blocks.smithing_table.use"));
+
+    /**
+     * The smithing table block instance.
+     */
+    @ApiStatus.AvailableSince("1.0.0")
+    @Nonnull
+    public static final Block SMITHING_TABLE = new BlockSmithingTable(Material.WOOD, MapColor.BROWN_STAINED_HARDENED_CLAY);
+
+    /**
+     * The smithing template item instance.
+     */
+    @ApiStatus.AvailableSince("1.0.0")
+    @Nonnull
+    public static final Item SMITHING_TEMPLATE = new ItemSmithingTemplate();
+
+    /**
+     * A searchable creative tab that holds all smithing templates and smithing tables.
+     */
+    @ApiStatus.AvailableSince("1.0.0")
+    @Nonnull
+    public static final CreativeTabs CREATIVE_TAB = new CreativeTabs(SmithingTable.MOD_ID + ":tab") {
+        @Override
+        public boolean hasSearchBar() {
+            return true;
+        }
+
         @Nonnull
         @SideOnly(Side.CLIENT)
         @Override
-        public ItemStack createIcon() { return Item.getItemFromBlock(SMITHING_TABLE).getDefaultInstance(); }
-
-        @Override
-        public boolean hasSearchBar() { return true; }
+        public ItemStack createIcon() {
+            return Item.getItemFromBlock(SmithingContent.SMITHING_TABLE).getDefaultInstance();
+        }
     }.setBackgroundImageName("item_search.png");
-
-    /**
-     * Internal. Holds all textures without a dedicated model.
-     */
-    @Nonnull
-    static Set<ResourceLocation> GENERATE = new HashSet<>();
-
-    /**
-     * Internal. Registers all textures without a dedicated model.
-     */
-    @SideOnly(Side.CLIENT)
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
-    static void registerGeneratedTextures(@Nonnull final TextureStitchEvent.Pre event) {
-        GENERATE.forEach(event.getMap()::registerSprite);
-    }
-
-    /**
-     * Internal. Generates and registers models for all textures without a dedicated model.
-     */
-    @SideOnly(Side.CLIENT)
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
-    static void registerGeneratedModels(@Nonnull final ModelBakeEvent event) {
-        @Nonnull final IModelState state = ForgeBlockStateV1.Transforms.get("forge:default-item").orElseGet(TRSRTransformation::identity);
-        GENERATE.forEach(texture -> event.getModelRegistry().putObject(new ModelResourceLocation(texture, "builtin/generated"),
-                new ItemLayerModel(ImmutableList.of(texture)).bake(state, DefaultVertexFormats.ITEM, ModelLoader.defaultTextureGetter())));
-    }
-
-    /**
-     * Internal. Tricks Intellij into not showing warnings when setting final fields to null.
-     */
-    @Nonnull
-    static <T> T holder() { return null; }
 }

@@ -6,10 +6,12 @@ import git.jbredwards.smithing_table.api.SmithingTemplate;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.item.EnumRarity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 import net.minecraft.world.World;
+import net.minecraftforge.common.IRarity;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -29,7 +31,7 @@ public final class ItemSmithingTemplate extends Item
     public static void initCreativeTabs() {
         TAB_LOOKUP.clear();
         SmithingTemplate.REGISTRY.forEach(template -> {
-            @Nullable final CreativeTabs[] tabs = template.getCreativeTabs();
+            @Nullable final CreativeTabs[] tabs = template.creativeTabs;
             if(tabs != null) for(@Nonnull final CreativeTabs tab : tabs) TAB_LOOKUP.put(tab, template);
         });
     }
@@ -45,6 +47,20 @@ public final class ItemSmithingTemplate extends Item
     @Override
     public CreativeTabs[] getCreativeTabs() {
         return TAB_LOOKUP.keySet().toArray(new CreativeTabs[0]);
+    }
+
+    @Nonnull
+    @Override
+    public EnumRarity getRarity(@Nonnull final ItemStack stack) {
+        @Nonnull final IRarity rarity = getForgeRarity(stack);
+        return rarity instanceof EnumRarity ? (EnumRarity)rarity: EnumRarity.UNCOMMON;
+    }
+
+    @Nonnull
+    @Override
+    public IRarity getForgeRarity(@Nonnull final ItemStack stack) {
+        @Nullable final SmithingTemplate template = SmithingTemplate.deserialize(stack);
+        return template != null ? template.rarity : EnumRarity.UNCOMMON;
     }
 
     @Nonnull
@@ -66,6 +82,6 @@ public final class ItemSmithingTemplate extends Item
     public boolean hasEffect(@Nonnull final ItemStack stack) {
         if(super.hasEffect(stack)) return true; // Always apply enchantment glint if this has enchantments.
         @Nullable final SmithingTemplate template = SmithingTemplate.deserialize(stack);
-        return template != null && template.hasEffect();
+        return template != null && template.forceEnchantGlint;
     }
 }

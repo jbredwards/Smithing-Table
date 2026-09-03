@@ -1,6 +1,7 @@
 package git.jbredwards.smithing_table.mod.common.inventory;
 
 import git.jbredwards.smithing_table.mod.SmithingTable;
+import git.jbredwards.smithing_table.mod.SmithingTableCfg;
 import git.jbredwards.smithing_table.mod.common.block.TileSmithingTable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
@@ -34,12 +35,13 @@ public class ContainerSmithingTable extends Container implements IWorldNameable
         smithingTable = Objects.requireNonNull((TileSmithingTable)worldIn.getTileEntity(new BlockPos(x, y, z)));
         world = worldIn;
         // Container slots.
-        addSlotToContainer(new SlotSmithingInput(this, TileSmithingTable.TEMPLATE, 8, 48));
-        addSlotToContainer(new SlotSmithingInput(this, TileSmithingTable.EQUIPMENT, 26, 48));
-        addSlotToContainer(new SlotSmithingInput(this, TileSmithingTable.MATERIAL, 44, 48));
-        addSlotToContainer(recipeHandler = new SlotSmithingOutput(this, TileSmithingTable.OUTPUT, 98, 48));
-        getSlot(TileSmithingTable.MATERIAL).setBackgroundName(MATERIAL_OVERLAY.toString());
-        getSlot(TileSmithingTable.TEMPLATE).setBackgroundName(TEMPLATE_OVERLAY.toString());
+        final int xOffset = !SmithingTableCfg.armorStand && SmithingTableCfg.armorStandBackground ? 27 : 0;
+        addSlotToContainer(new SlotSmithingInput(this, TileSmithingTable.TEMPLATE, 8 + xOffset, 48));
+        addSlotToContainer(new SlotSmithingInput(this, TileSmithingTable.EQUIPMENT, 26 + xOffset, 48));
+        addSlotToContainer(new SlotSmithingInput(this, TileSmithingTable.MATERIAL, 44 + xOffset, 48));
+        addSlotToContainer(recipeHandler = new SlotSmithingOutput(this, TileSmithingTable.OUTPUT, 98 + xOffset, 48));
+        if(SmithingTableCfg.materialOverlay) getSlot(TileSmithingTable.MATERIAL).setBackgroundName(MATERIAL_OVERLAY.toString());
+        if(SmithingTableCfg.templateOverlay) getSlot(TileSmithingTable.TEMPLATE).setBackgroundName(TEMPLATE_OVERLAY.toString());
         // Player inventory slots.
         for(int i = 0; i < 3; ++i) for(int j = 0; j < 9; ++j) addSlotToContainer(new Slot(player.inventory, j + i * 9 + 9, 8 + j * 18, 84 + i * 18));
         for(int k = 0; k < 9; ++k) addSlotToContainer(new Slot(player.inventory, k, 8 + k * 18, 142));

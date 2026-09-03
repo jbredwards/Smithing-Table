@@ -28,6 +28,7 @@ public final class JEIHandler implements IModPlugin
         registry.handleRecipes(SmithingRecipe.class, SmithingJEIRecipeWrapper::new, SmithingJEIRecipeCategory.ID);
         registry.addRecipes(SmithingRecipe.REGISTRY.getValuesCollection(), SmithingJEIRecipeCategory.ID);
         registry.addRecipeClickArea(GuiSmithingTable.class, 68, 49, 22, 15, SmithingJEIRecipeCategory.ID);
+        registry.addRecipeClickArea(GuiSmithingTable.Sub.class, 95, 49, 22, 15, SmithingJEIRecipeCategory.ID);
         registry.addRecipeCatalyst(new ItemStack(SmithingContent.SMITHING_TABLE, 1, OreDictionary.WILDCARD_VALUE), SmithingJEIRecipeCategory.ID);
     }
 

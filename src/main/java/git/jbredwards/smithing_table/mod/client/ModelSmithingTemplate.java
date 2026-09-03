@@ -41,8 +41,7 @@ public final class ModelSmithingTemplate implements IModel
     @Nonnull
     @Override
     public Collection<ResourceLocation> getDependencies() {
-        return SmithingTemplate.REGISTRY.getValuesCollection().stream().map(SmithingTemplate::getModelLocation)
-                .filter(model -> !model.getVariant().equals("builtin/generated")).collect(ImmutableList.toImmutableList());
+        return SmithingTemplate.REGISTRY.getValuesCollection().stream().map(template -> template.model).collect(ImmutableList.toImmutableList());
     }
 
     @Nonnull
@@ -71,7 +70,7 @@ public final class ModelSmithingTemplate implements IModel
                 @Override
                 public IBakedModel handleItemState(@Nonnull final IBakedModel originalModel, @Nonnull final ItemStack stack, @Nullable final World world, @Nullable final EntityLivingBase entity) {
                     @Nullable final SmithingTemplate template = SmithingTemplate.deserialize(stack);
-                    return template != null ? Loader.INSTANCE.models.computeIfAbsent(template.getModelLocation(), location -> {
+                    return template != null ? Loader.INSTANCE.models.computeIfAbsent(template.model, location -> {
                         @Nonnull final IModel model = ModelLoaderRegistry.getModelOrMissing(location);
                         return model.bake(model.getDefaultState(), format, bakedTextureGetter);
                     }) : originalModel;

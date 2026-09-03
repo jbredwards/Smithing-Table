@@ -4,35 +4,34 @@ import git.jbredwards.smithing_table.api.SmithingContent;
 import git.jbredwards.smithing_table.api.SmithingRecipe;
 import git.jbredwards.smithing_table.mod.client.ModelSmithingTable;
 import git.jbredwards.smithing_table.mod.client.ModelSmithingTemplate;
-import git.jbredwards.smithing_table.mod.common.block.BlockSmithingTable;
 import git.jbredwards.smithing_table.mod.common.block.TableData;
 import git.jbredwards.smithing_table.mod.common.inventory.ContainerSmithingTable;
 import git.jbredwards.smithing_table.mod.common.item.ItemSmithingTable;
-import git.jbredwards.smithing_table.mod.common.item.ItemSmithingTemplate;
 import git.jbredwards.smithing_table.mod.common.block.TileSmithingTable;
 import net.minecraft.block.Block;
-import net.minecraft.block.material.MapColor;
-import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
+import net.minecraftforge.common.config.Config;
+import net.minecraftforge.common.config.ConfigManager;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.registries.RegistryBuilder;
 
 import javax.annotation.Nonnull;
-import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
 
@@ -45,14 +44,14 @@ final class RegistryHandler
 {
     @SubscribeEvent
     static void registerBlocks(@Nonnull final RegistryEvent.Register<Block> event) {
-        event.getRegistry().register(new BlockSmithingTable(Material.WOOD, MapColor.BROWN_STAINED_HARDENED_CLAY).setTranslationKey(SmithingTable.MOD_ID + ".table").setRegistryName("table"));
+        event.getRegistry().register(SmithingContent.SMITHING_TABLE.setCreativeTab(SmithingContent.CREATIVE_TAB).setTranslationKey(SmithingTable.MOD_ID + ".table").setRegistryName("table"));
         GameRegistry.registerTileEntity(TileSmithingTable.class, new ResourceLocation(SmithingTable.MOD_ID, "table"));
     }
 
     @SubscribeEvent
     static void registerItems(@Nonnull final RegistryEvent.Register<Item> event) {
         event.getRegistry().register(new ItemSmithingTable(SmithingContent.SMITHING_TABLE).setRegistryName("table"));
-        event.getRegistry().register(new ItemSmithingTemplate().setHasSubtypes(true).setCreativeTab(SmithingContent.CREATIVE_TAB).setTranslationKey(SmithingTable.MOD_ID + ".template").setRegistryName("template"));
+        event.getRegistry().register(SmithingContent.SMITHING_TEMPLATE.setHasSubtypes(true).setCreativeTab(SmithingContent.CREATIVE_TAB).setTranslationKey(SmithingTable.MOD_ID + ".template").setRegistryName("template"));
     }
 
     @SubscribeEvent
@@ -90,12 +89,12 @@ final class RegistryHandler
     @SubscribeEvent
     static void registerSmithing(@Nonnull final RegistryEvent.Register<SmithingRecipe> event) {
         // A recipe for testing purposes. Disabled outside of dev.
-        event.getRegistry().register(new SmithingRecipe.Impl(Collections.emptyList(), Items.IRON_AXE, "gemDiamond", new ItemStack(Items.DIAMOND_AXE), false).setRegistryName("example"));
+        event.getRegistry().register(new SmithingRecipe.Impl(Ingredient.EMPTY, Items.IRON_AXE, "gemDiamond", new ItemStack(Items.DIAMOND_AXE)).setRegistryName("example"));
     }
 
     @SubscribeEvent
     static void registerSounds(@Nonnull final RegistryEvent.Register<SoundEvent> event) {
-        event.getRegistry().register(new SoundEvent(new ResourceLocation(SmithingTable.MOD_ID, "blocks.smithing_table.use")).setRegistryName("blocks.smithing_table.use"));
+        event.getRegistry().register(SmithingContent.BLOCK_SMITHING_TABLE_USE.setRegistryName("blocks.smithing_table.use"));
     }
 
     @SubscribeEvent
@@ -104,5 +103,10 @@ final class RegistryHandler
             event.getMap().registerSprite(ContainerSmithingTable.MATERIAL_OVERLAY);
             event.getMap().registerSprite(ContainerSmithingTable.TEMPLATE_OVERLAY);
         }
+    }
+
+    @SubscribeEvent
+    static void syncConfig(@Nonnull final ConfigChangedEvent.OnConfigChangedEvent event) {
+        if(SmithingTable.MOD_ID.equals(event.getModID())) ConfigManager.sync(SmithingTable.MOD_ID, Config.Type.INSTANCE);
     }
 }

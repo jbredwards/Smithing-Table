@@ -1,6 +1,5 @@
 package git.jbredwards.smithing_table.api;
 
-import git.jbredwards.smithing_table.mod.SmithingTable;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.nbt.NBTTagCompound;
@@ -13,10 +12,7 @@ import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Objects;
-import java.util.function.Predicate;
 
 /**
  * The recipe object used by Smithing Tables.
@@ -30,51 +26,50 @@ public interface SmithingRecipe extends IForgeRegistryEntry<SmithingRecipe>
     /**
      * Holds all smithing recipes. <b>This field cannot be initialized before fml pre-init!</b>
      * <br> This registry is an {@link net.minecraftforge.registries.IForgeRegistryModifiable}.
-     * @since 1.0.0
      */
+    @ApiStatus.AvailableSince("1.0.0")
     @Nonnull
     IForgeRegistry<SmithingRecipe> REGISTRY = Objects.requireNonNull(GameRegistry.findRegistry(SmithingRecipe.class), "Registry was loaded too early!");
 
     /**
      * @return The smithing template ingredient for this recipe. May be empty.
-     * @since 1.0.0
+     * @see SmithingTemplateIngredient
+     * @author jbred
      */
+    @ApiStatus.AvailableSince("1.0.0")
     @Nonnull
-    Collection<SmithingTemplate> getTemplateIngredient();
-
-    /**
-     * @return True if this recipe requires {@link SmithingRecipe#getTemplateIngredient()}
-     * while smithing templates are disabled in the server config.
-     * @since 1.0.0
-     */
-    boolean alwaysRequireSmithingTemplate();
+    Ingredient getTemplateIngredient();
 
     /**
      * @return The equipment ingredient for this recipe.
-     * @since 1.0.0
+     * @author jbred
      */
+    @ApiStatus.AvailableSince("1.0.0")
     @Nonnull
     Ingredient getEquipmentIngredient();
 
     /**
      * @return The material ingredient for this recipe.
-     * @since 1.0.0
+     * @author jbred
      */
+    @ApiStatus.AvailableSince("1.0.0")
     @Nonnull
     Ingredient getMaterialIngredient();
 
     /**
      * @return The raw result of this recipe. Used by recipe viewing mods and recipe logic.
-     * @since 1.0.0
+     * @author jbred
      */
+    @ApiStatus.AvailableSince("1.0.0")
     @Nonnull
     ItemStack getResult();
 
     /**
      * @return The actual ItemStack given to the player when this recipe is performed.
      * @throws NullPointerException If any parameters are null.
-     * @since 1.0.0
+     * @author jbred
      */
+    @ApiStatus.AvailableSince("1.0.0")
     @Nonnull
     default ItemStack getCraftedResult(@Nonnull final IItemHandler smithingInventory) {
         @Nonnull final ItemStack equipment = smithingInventory.getStackInSlot(1);
@@ -92,15 +87,15 @@ public interface SmithingRecipe extends IForgeRegistryEntry<SmithingRecipe>
     /**
      * @return The first recipe found that matches the input ingredients.
      * @throws NullPointerException If any parameters are null.
-     * @since 1.0.0
+     * @author jbred
      */
+    @ApiStatus.AvailableSince("1.0.0")
     @Nullable
     static SmithingRecipe lookupResult(@Nonnull final ItemStack template, @Nonnull final ItemStack equipment, @Nonnull final ItemStack material) {
         if(equipment.isEmpty() || material.isEmpty()) return null;
 
-        @Nullable final SmithingTemplate st = SmithingTemplate.deserialize(template);
         return REGISTRY.getValuesCollection().stream()
-                .filter(recipe -> testResult(recipe, st, equipment, material))
+                .filter(recipe -> testResult(recipe, template, equipment, material))
                 .findFirst()
                 .orElse(null);
     }
@@ -108,34 +103,26 @@ public interface SmithingRecipe extends IForgeRegistryEntry<SmithingRecipe>
     /**
      * @return True if the recipe can be performed with the provided ingredients.
      * @throws NullPointerException If any parameters are null.
-     * @since 1.0.0
+     * @author jbred
      */
-    static boolean testResult(@Nonnull final SmithingRecipe recipe, @Nullable final SmithingTemplate template, @Nonnull final ItemStack equipment, @Nonnull final ItemStack material) {
-        return !equipment.isEmpty() && !material.isEmpty() && (ignoreTemplate(recipe) || template != null && recipe.getTemplateIngredient().contains(template))
+    @ApiStatus.AvailableSince("1.0.0")
+    static boolean testResult(@Nonnull final SmithingRecipe recipe, @Nonnull final ItemStack template, @Nonnull final ItemStack equipment, @Nonnull final ItemStack material) {
+        return !equipment.isEmpty() && !material.isEmpty() && recipe.getTemplateIngredient().test(template)
                 && recipe.getEquipmentIngredient().test(equipment) && recipe.getMaterialIngredient().test(material);
     }
 
     /**
      * @return True if the input ingredients form part of a recipe.
      * @throws NullPointerException If any parameters are null.
-     * @since 1.0.0
+     * @author jbred
      */
-    static boolean partialMatch(@Nonnull final ItemStack template, @Nonnull final ItemStack equipment, @Nonnull final ItemStack material, @Nonnull final Predicate<SmithingRecipe> ignoreTemplate) {
-        @Nullable final SmithingTemplate st = SmithingTemplate.deserialize(template);
+    @ApiStatus.AvailableSince("1.0.0")
+    static boolean partialMatch(@Nonnull final ItemStack template, @Nonnull final ItemStack equipment, @Nonnull final ItemStack material) {
         return REGISTRY.getValuesCollection().stream().parallel()
                 .anyMatch(recipe
-                        -> (template.isEmpty() || recipe.getTemplateIngredient().contains(st) || ignoreTemplate.test(recipe))
+                        -> (template.isEmpty() || recipe.getTemplateIngredient().test(template))
                         && (equipment.isEmpty() || recipe.getEquipmentIngredient().test(equipment))
                         && (material.isEmpty() || recipe.getMaterialIngredient().test(material)));
-    }
-
-    /**
-     * @return True if the provided recipe should ignore its smithing template ingredient.
-     * @throws NullPointerException If any parameters are null.
-     * @since 1.0.0
-     */
-    static boolean ignoreTemplate(@Nonnull final SmithingRecipe recipe) {
-        return recipe.getTemplateIngredient().isEmpty() || !SmithingTable.templateEnabled() && !recipe.alwaysRequireSmithingTemplate();
     }
 
     /**
@@ -146,28 +133,21 @@ public interface SmithingRecipe extends IForgeRegistryEntry<SmithingRecipe>
     @ApiStatus.AvailableSince("1.0.0")
     class Impl extends IForgeRegistryEntry.Impl<SmithingRecipe> implements SmithingRecipe
     {
-        @Nonnull private final Collection<SmithingTemplate> template;
-        @Nonnull private final Ingredient equipment, material;
-        @Nonnull private final ItemStack result;
-
-        private final boolean alwaysRequireSmithingTemplate;
-        public Impl(@Nonnull final Collection<SmithingTemplate> template, @Nonnull final Object equipment, @Nonnull final Object material, @Nonnull final ItemStack result, final boolean alwaysRequireSmithingTemplate) {
-            this.template = Collections.unmodifiableCollection(template);
+        @ApiStatus.Internal @Nonnull private final Ingredient template, equipment, material;
+        @ApiStatus.Internal @Nonnull private final ItemStack result;
+        @ApiStatus.AvailableSince("1.0.0")
+        public Impl(@Nonnull final Object template, @Nonnull final Object equipment, @Nonnull final Object material, @Nonnull final ItemStack result) {
+            if(template instanceof SmithingTemplate) this.template = new SmithingTemplateIngredient((SmithingTemplate)template);
+            else this.template = Objects.requireNonNull(CraftingHelper.getIngredient(template), "Cannot parse template ingredient: " + template);
             this.equipment = Objects.requireNonNull(CraftingHelper.getIngredient(equipment), "Cannot parse equipment ingredient: " + equipment);
             this.material = Objects.requireNonNull(CraftingHelper.getIngredient(material), "Cannot parse material ingredient: " + equipment);
             this.result = Objects.requireNonNull(result);
-            this.alwaysRequireSmithingTemplate = alwaysRequireSmithingTemplate;
         }
 
         @Nonnull
         @Override
-        public Collection<SmithingTemplate> getTemplateIngredient() {
+        public Ingredient getTemplateIngredient() {
             return this.template;
-        }
-
-        @Override
-        public boolean alwaysRequireSmithingTemplate() {
-            return this.alwaysRequireSmithingTemplate;
         }
 
         @Nonnull

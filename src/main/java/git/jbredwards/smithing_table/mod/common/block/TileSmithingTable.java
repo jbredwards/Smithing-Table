@@ -1,14 +1,16 @@
 package git.jbredwards.smithing_table.mod.common.block;
 
 import com.google.common.primitives.Floats;
+import git.jbredwards.smithing_table.api.SmithingContent;
 import git.jbredwards.smithing_table.api.SmithingRecipe;
-import git.jbredwards.smithing_table.api.SmithingTemplate;
 import git.jbredwards.smithing_table.mod.SmithingTable;
+import git.jbredwards.smithing_table.mod.SmithingTableCfg;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
@@ -40,10 +42,9 @@ public class TileSmithingTable extends TileEntity implements IWorldNameable
         @Override
         public boolean isItemValid(final int slot, @Nonnull final ItemStack stack) {
             switch(slot) {
-                case TEMPLATE:  return SmithingTable.templateEnabled() &&
-                                       SmithingRecipe.partialMatch(stack, getStackInSlot(1), getStackInSlot(2), recipe -> false);
-                case EQUIPMENT: return SmithingRecipe.partialMatch(getStackInSlot(0), stack, getStackInSlot(2), SmithingRecipe::ignoreTemplate);
-                case MATERIAL:  return SmithingRecipe.partialMatch(getStackInSlot(0), getStackInSlot(1), stack, SmithingRecipe::ignoreTemplate);
+                case TEMPLATE:  return SmithingRecipe.partialMatch(stack, getStackInSlot(EQUIPMENT), getStackInSlot(MATERIAL));
+                case EQUIPMENT: return SmithingRecipe.partialMatch(getStackInSlot(TEMPLATE), stack, getStackInSlot(MATERIAL));
+                case MATERIAL:  return SmithingRecipe.partialMatch(getStackInSlot(TEMPLATE), getStackInSlot(EQUIPMENT), stack);
             }
 
             return false;
@@ -89,7 +90,7 @@ public class TileSmithingTable extends TileEntity implements IWorldNameable
             else if(slot < OUTPUT) return basicInventory.extractItem(slot, amount, simulate);
             // Find craft for automation.
             @Nonnull final ItemStack template = getStackInSlot(TEMPLATE), equipment = getStackInSlot(EQUIPMENT), material = getStackInSlot(MATERIAL);
-            if(recipe != null && !SmithingRecipe.testResult(recipe, SmithingTemplate.deserialize(template), equipment, material)) recipe = null;
+            if(recipe != null && !SmithingRecipe.testResult(recipe, template, equipment, material)) recipe = null;
             if(recipe == null) recipe = SmithingRecipe.lookupResult(template, equipment, material);
             if(recipe == null) return basicInventory.extractItem(OUTPUT, amount, simulate);
             @Nonnull final ItemStack crafted = recipe.getCraftedResult(basicInventory);
@@ -105,7 +106,8 @@ public class TileSmithingTable extends TileEntity implements IWorldNameable
             crafted.setCount(Math.min(crafts * recipe.getResult().getCount() + skipped, amount));
             // Consume ingredients.
             if(!simulate) {
-                if(!SmithingRecipe.ignoreTemplate(recipe)) template.shrink(crafts);
+                if(SmithingTableCfg.automationSound) playSound();
+                if(!template.isEmpty()) template.shrink(crafts);
                 equipment.shrink(crafts);
                 material.shrink(crafts);
                 // Store extras within internal output slot, and update comparator state.
@@ -123,20 +125,27 @@ public class TileSmithingTable extends TileEntity implements IWorldNameable
     };
 
     public float getSmithingOperations(@Nonnull final SmithingRecipe recipe, final float maxOutputs) {
+        @Nonnull final ItemStack template = basicInventory.getStackInSlot(TEMPLATE);
         return Floats.min(maxOutputs / recipe.getResult().getCount(),
-                SmithingRecipe.ignoreTemplate(recipe) ? 64 : basicInventory.getStackInSlot(0).getCount(),
-                basicInventory.getStackInSlot(1).getCount(), basicInventory.getStackInSlot(2).getCount());
+                template.isEmpty() ? basicInventory.getSlotLimit(TEMPLATE) : template.getCount(),
+                basicInventory.getStackInSlot(EQUIPMENT).getCount(), basicInventory.getStackInSlot(MATERIAL).getCount());
+    }
+
+    public void playSound() {
+        if(hasWorld() && !world.isRemote) world.playSound(null, pos,
+                SmithingContent.BLOCK_SMITHING_TABLE_USE, SoundCategory.BLOCKS,
+                1, MathHelper.nextFloat(world.rand, 0.9f, 1));
     }
 
     @Override
     public boolean hasCapability(@Nonnull final Capability<?> capability, @Nullable final EnumFacing facing) {
-        return capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY || super.hasCapability(capability, facing);
+        return SmithingTableCfg.automation && capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY || super.hasCapability(capability, facing);
     }
 
     @Nullable
     @Override
     public <T> T getCapability(@Nonnull final Capability<T> capability, @Nullable final EnumFacing facing) {
-        if(capability != CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) return super.getCapability(capability, facing);
+        if(!SmithingTableCfg.automation || capability != CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) return super.getCapability(capability, facing);
         else return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(new IItemHandler() {
             @Override
             public int getSlots() {

@@ -35,7 +35,7 @@ public class SmithingJEIRecipeCategory implements IRecipeCategory<SmithingJEIRec
         background = guiHelper.createDrawable(GuiSmithingTable.TEXTURE, 0, 228, 108, 28); // Blank.
         icon = guiHelper.createDrawableIngredient(Item.getItemFromBlock(SmithingContent.SMITHING_TABLE).getDefaultInstance());
         slot = guiHelper.getSlotDrawable();
-        arrow = guiHelper.createDrawable(GuiSmithingTable.TEXTURE, 67, 48, 24, 17);
+        arrow = guiHelper.createDrawable(GuiSmithingTable.TEXTURE, 60, 167, 24, 17);
     }
 
     @Nonnull

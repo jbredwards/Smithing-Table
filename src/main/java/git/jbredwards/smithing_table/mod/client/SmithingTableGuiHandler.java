@@ -1,6 +1,7 @@
 package git.jbredwards.smithing_table.mod.client;
 
 import git.jbredwards.smithing_table.mod.SmithingTable;
+import git.jbredwards.smithing_table.mod.SmithingTableCfg;
 import git.jbredwards.smithing_table.mod.client.gui.GuiSmithingTable;
 import git.jbredwards.smithing_table.mod.common.inventory.ContainerSmithingTable;
 import net.minecraft.entity.player.EntityPlayer;
@@ -21,7 +22,7 @@ public enum SmithingTableGuiHandler implements IGuiHandler
     INSTANCE;
 
     public static void openGui(@Nonnull final EntityPlayer player, @Nonnull final World world, @Nonnull final BlockPos pos) {
-        if(!world.isRemote) player.openGui(SmithingTable.MOD_ID, SmithingTable.templateEnabled() ? 1 : 2, world, pos.getX(), pos.getY(), pos.getZ());
+        if(!world.isRemote) player.openGui(SmithingTable.MOD_ID, 1, world, pos.getX(), pos.getY(), pos.getZ());
     }
 
     @Nullable
@@ -39,7 +40,8 @@ public enum SmithingTableGuiHandler implements IGuiHandler
     public Object getClientGuiElement(final int ID, @Nonnull final EntityPlayer player, @Nonnull final World world, final int x, final int y, final int z) {
         switch(ID) {
             case 1:
-            case 2: return new GuiSmithingTable(player, world, x, y, z);
+            case 2: return SmithingTableCfg.armorStand || !SmithingTableCfg.armorStandBackground
+                    ? new GuiSmithingTable(player, world, x, y, z) : new GuiSmithingTable.Sub(player, world, x, y, z);
             default: return null;
         }
     }
