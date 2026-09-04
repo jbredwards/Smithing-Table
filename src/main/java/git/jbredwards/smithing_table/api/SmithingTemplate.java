@@ -50,6 +50,18 @@ public class SmithingTemplate extends IForgeRegistryEntry.Impl<SmithingTemplate>
     public boolean forceEnchantGlint = false;
 
     /**
+     * The maximum item durability of this smithing template.
+     */
+    @ApiStatus.AvailableSince("1.0.0")
+    public int maxDurability = 0;
+
+    /**
+     * The maximum item stack size of this smithing template.
+     */
+    @ApiStatus.AvailableSince("1.0.0")
+    public int maxStackSize = 64;
+
+    /**
      * The item rarity for this smithing template.
      */
     @ApiStatus.AvailableSince("1.0.0")

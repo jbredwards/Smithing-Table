@@ -107,7 +107,10 @@ public class TileSmithingTable extends TileEntity implements IWorldNameable
             // Consume ingredients.
             if(!simulate) {
                 if(SmithingTableCfg.automationSound) playSound();
-                if(!template.isEmpty()) template.shrink(crafts);
+                if(!template.isEmpty()) {
+                    if(template.getMaxDamage() == 0) template.shrink(crafts);
+                    else if(template.attemptDamageItem(crafts, world.rand, null)) template.setCount(0);
+                }
                 equipment.shrink(crafts);
                 material.shrink(crafts);
                 // Store extras within internal output slot, and update comparator state.
@@ -127,7 +130,8 @@ public class TileSmithingTable extends TileEntity implements IWorldNameable
     public float getSmithingOperations(@Nonnull final SmithingRecipe recipe, final float maxOutputs) {
         @Nonnull final ItemStack template = basicInventory.getStackInSlot(TEMPLATE);
         return Floats.min(maxOutputs / recipe.getResult().getCount(),
-                template.isEmpty() ? basicInventory.getSlotLimit(TEMPLATE) : template.getCount(),
+                template.isEmpty() ? basicInventory.getSlotLimit(TEMPLATE) :
+                template.getMaxDamage() == 0 ? template.getCount() : template.getMaxDamage(),
                 basicInventory.getStackInSlot(EQUIPMENT).getCount(), basicInventory.getStackInSlot(MATERIAL).getCount());
     }
 

@@ -84,4 +84,18 @@ public final class ItemSmithingTemplate extends Item
         @Nullable final SmithingTemplate template = SmithingTemplate.deserialize(stack);
         return template != null && template.forceEnchantGlint;
     }
+
+    @Override
+    public int getMaxDamage(@Nonnull final ItemStack stack) {
+        @Nullable final SmithingTemplate template = SmithingTemplate.deserialize(stack);
+        return template != null ? Math.max(0, template.maxDurability) : super.getMaxDamage(stack);
+    }
+
+    @Override
+    public int getItemStackLimit(@Nonnull final ItemStack stack) {
+        @Nullable final SmithingTemplate template = SmithingTemplate.deserialize(stack);
+        if(template == null) return super.getItemStackLimit(stack);
+        else if(template.maxDurability > 0 || super.getMaxDamage(stack) != 0) return 1;
+        else return Math.min(super.getItemStackLimit(stack), template.maxStackSize);
+    }
 }
