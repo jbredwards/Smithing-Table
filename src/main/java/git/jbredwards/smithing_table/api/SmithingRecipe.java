@@ -3,6 +3,7 @@ package git.jbredwards.smithing_table.api;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.SoundEvent;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.items.IItemHandler;
@@ -85,6 +86,16 @@ public interface SmithingRecipe extends IForgeRegistryEntry<SmithingRecipe>
     }
 
     /**
+     * @return The sound to be played when this recipe is performed.
+     * @author jbred
+     */
+    @ApiStatus.AvailableSince("1.0.0")
+    @Nonnull
+    default SoundEvent getSound(@Nonnull final ItemStack result) {
+        return SmithingContent.BLOCK_SMITHING_TABLE_USE;
+    }
+
+    /**
      * @return The first recipe found that matches the input ingredients.
      * @throws NullPointerException If any parameters are null.
      * @author jbred
@@ -135,13 +146,21 @@ public interface SmithingRecipe extends IForgeRegistryEntry<SmithingRecipe>
     {
         @ApiStatus.Internal @Nonnull private final Ingredient template, equipment, material;
         @ApiStatus.Internal @Nonnull private final ItemStack result;
+        @ApiStatus.Internal @Nonnull private final SoundEvent sound;
+
         @ApiStatus.AvailableSince("1.0.0")
         public Impl(@Nonnull final Object template, @Nonnull final Object equipment, @Nonnull final Object material, @Nonnull final ItemStack result) {
+            this(SmithingContent.BLOCK_SMITHING_TABLE_USE, template, equipment, material, result);
+        }
+
+        @ApiStatus.AvailableSince("1.0.0")
+        public Impl(@Nonnull final SoundEvent sound, @Nonnull final Object template, @Nonnull final Object equipment, @Nonnull final Object material, @Nonnull final ItemStack result) {
             if(template instanceof SmithingTemplate) this.template = new SmithingTemplateIngredient((SmithingTemplate)template);
             else this.template = Objects.requireNonNull(CraftingHelper.getIngredient(template), "Cannot parse template ingredient: " + template);
             this.equipment = Objects.requireNonNull(CraftingHelper.getIngredient(equipment), "Cannot parse equipment ingredient: " + equipment);
             this.material = Objects.requireNonNull(CraftingHelper.getIngredient(material), "Cannot parse material ingredient: " + equipment);
             this.result = Objects.requireNonNull(result);
+            this.sound = Objects.requireNonNull(sound);
         }
 
         @Nonnull
@@ -166,6 +185,12 @@ public interface SmithingRecipe extends IForgeRegistryEntry<SmithingRecipe>
         @Override
         public ItemStack getResult() {
             return this.result;
+        }
+
+        @Nonnull
+        @Override
+        public SoundEvent getSound(@Nonnull final ItemStack result) {
+            return this.sound;
         }
     }
 }

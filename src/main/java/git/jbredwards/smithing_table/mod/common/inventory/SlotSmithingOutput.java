@@ -35,7 +35,7 @@ public class SlotSmithingOutput extends SlotItemHandler
     @Nonnull
     @Override
     public ItemStack onTake(@Nonnull final EntityPlayer thePlayer, @Nonnull final ItemStack stack) {
-        if(!SmithingTableCfg.automationSound) container.smithingTable.playSound();
+        if(!SmithingTableCfg.automationSound) container.smithingTable.playSound(stack);
         return super.onTake(thePlayer, stack);
     }
 }
