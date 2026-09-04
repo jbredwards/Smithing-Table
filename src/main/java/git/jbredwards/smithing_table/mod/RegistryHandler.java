@@ -1,21 +1,20 @@
 package git.jbredwards.smithing_table.mod;
 
 import git.jbredwards.smithing_table.api.SmithingContent;
-import git.jbredwards.smithing_table.api.SmithingRecipe;
+import git.jbredwards.smithing_table.api.SmithingTemplate;
 import git.jbredwards.smithing_table.mod.client.ModelSmithingTable;
 import git.jbredwards.smithing_table.mod.client.ModelSmithingTemplate;
 import git.jbredwards.smithing_table.mod.common.block.TableData;
+import git.jbredwards.smithing_table.mod.common.compat.groovyscript.GRSSmithingTemplates;
 import git.jbredwards.smithing_table.mod.common.inventory.ContainerSmithingTable;
 import git.jbredwards.smithing_table.mod.common.item.ItemSmithingTable;
 import git.jbredwards.smithing_table.mod.common.block.TileSmithingTable;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
@@ -26,6 +25,7 @@ import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.ConfigManager;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
@@ -53,7 +53,7 @@ final class RegistryHandler
     @SubscribeEvent
     static void registerItems(@Nonnull final RegistryEvent.Register<Item> event) {
         event.getRegistry().register(new ItemSmithingTable(SmithingContent.SMITHING_TABLE).setRegistryName("table"));
-        event.getRegistry().register(SmithingContent.SMITHING_TEMPLATE.setHasSubtypes(true).setCreativeTab(SmithingContent.CREATIVE_TAB).setTranslationKey(SmithingTable.MOD_ID + ".template").setRegistryName("template"));
+        event.getRegistry().register(SmithingContent.SMITHING_TEMPLATE.setCreativeTab(SmithingContent.CREATIVE_TAB).setTranslationKey(SmithingTable.MOD_ID + ".template").setRegistryName("template"));
     }
 
     @SideOnly(Side.CLIENT)
@@ -90,14 +90,13 @@ final class RegistryHandler
     }
 
     @SubscribeEvent
-    static void registerSmithing(@Nonnull final RegistryEvent.Register<SmithingRecipe> event) {
-        // A recipe for testing purposes. Disabled outside of dev.
-        event.getRegistry().register(new SmithingRecipe.Impl(Ingredient.EMPTY, Items.IRON_AXE, "gemDiamond", new ItemStack(Items.DIAMOND_AXE)).setRegistryName("example"));
+    static void registerSounds(@Nonnull final RegistryEvent.Register<SoundEvent> event) {
+        event.getRegistry().register(SmithingContent.BLOCK_SMITHING_TABLE_USE.setRegistryName("blocks.smithing_table.use"));
     }
 
     @SubscribeEvent
-    static void registerSounds(@Nonnull final RegistryEvent.Register<SoundEvent> event) {
-        event.getRegistry().register(SmithingContent.BLOCK_SMITHING_TABLE_USE.setRegistryName("blocks.smithing_table.use"));
+    static void registerTemplates(@Nonnull final RegistryEvent.Register<SmithingTemplate> event) {
+        if(Loader.isModLoaded("groovyscript")) GRSSmithingTemplates.registerTemplates(event.getRegistry());
     }
 
     @SideOnly(Side.CLIENT)

@@ -34,7 +34,7 @@ import java.util.Objects;
 @Mod(modid = SmithingTable.MOD_ID, name = SmithingTable.MOD_NAME, version = SmithingTable.VERSION,
 guiFactory = "git.jbredwards.smithing_table.mod.client.gui.SmithingTableGuiFactory",
 updateJSON = "https://api.modrinth.com/updates/smithing-table/forge_updates.json",
-dependencies = "after-client:assetmover@[2.5,)")
+dependencies = "after-client:assetmover@[2.5,);after:groovyscript@[1.4.3,)")
 public final class SmithingTable
 {
     @Nonnull
