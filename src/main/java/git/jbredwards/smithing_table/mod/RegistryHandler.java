@@ -28,6 +28,8 @@ import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.registries.RegistryBuilder;
 
@@ -54,6 +56,7 @@ final class RegistryHandler
         event.getRegistry().register(SmithingContent.SMITHING_TEMPLATE.setHasSubtypes(true).setCreativeTab(SmithingContent.CREATIVE_TAB).setTranslationKey(SmithingTable.MOD_ID + ".template").setRegistryName("template"));
     }
 
+    @SideOnly(Side.CLIENT)
     @SubscribeEvent
     static void registerItemModels(@Nonnull final ModelRegistryEvent event) {
         ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(SmithingContent.SMITHING_TABLE), 0, new ModelResourceLocation(SmithingContent.SMITHING_TABLE.getRegistryName(), "inventory"));
@@ -97,6 +100,7 @@ final class RegistryHandler
         event.getRegistry().register(SmithingContent.BLOCK_SMITHING_TABLE_USE.setRegistryName("blocks.smithing_table.use"));
     }
 
+    @SideOnly(Side.CLIENT)
     @SubscribeEvent
     static void registerTextures(@Nonnull final TextureStitchEvent.Pre event) {
         if(event.getMap() == Minecraft.getMinecraft().getTextureMapBlocks()) {
