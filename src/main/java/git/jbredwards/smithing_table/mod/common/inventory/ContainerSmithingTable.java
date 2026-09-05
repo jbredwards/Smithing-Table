@@ -75,7 +75,7 @@ public class ContainerSmithingTable extends Container implements IWorldNameable
             if(slotStack.isEmpty()) slot.putStack(ItemStack.EMPTY);
             else slot.onSlotChanged();
             if(slotStack.getCount() == slotStackOld.getCount()) return ItemStack.EMPTY;
-            slot.onTake(playerIn, slotStack);
+            slot.onTake(playerIn, slotStackOld);
         }
 
         return ItemStack.EMPTY;

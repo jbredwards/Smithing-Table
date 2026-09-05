@@ -57,7 +57,9 @@ public class TileSmithingTable extends TileEntity implements IWorldNameable
     };
 
     @Nonnull
-    public final IItemHandler processor = new IItemHandler() {
+    public final SmithingRecipeProcessor processor = new SmithingRecipeProcessor();
+    public final class SmithingRecipeProcessor implements IItemHandler
+    {
         @Nullable
         private SmithingRecipe recipe;
 
@@ -106,7 +108,7 @@ public class TileSmithingTable extends TileEntity implements IWorldNameable
             crafted.setCount(Math.min(crafts * recipe.getResult().getCount() + skipped, amount));
             // Consume ingredients.
             if(!simulate) {
-                if(SmithingTableCfg.automationSound) playSound();
+                if(SmithingTableCfg.automationSound) playSound(crafted);
                 if(!template.isEmpty()) {
                     if(template.getMaxDamage() == 0) template.shrink(crafts);
                     else if(template.attemptDamageItem(crafts, world.rand, null)) template.setCount(0);
@@ -125,7 +127,7 @@ public class TileSmithingTable extends TileEntity implements IWorldNameable
         public boolean isItemValid(final int slot, @Nonnull final ItemStack stack) {
             return basicInventory.isItemValid(slot, stack);
         }
-    };
+    }
 
     public float getSmithingOperations(@Nonnull final SmithingRecipe recipe, final float maxOutputs) {
         @Nonnull final ItemStack template = basicInventory.getStackInSlot(TEMPLATE);
@@ -135,10 +137,10 @@ public class TileSmithingTable extends TileEntity implements IWorldNameable
                 basicInventory.getStackInSlot(EQUIPMENT).getCount(), basicInventory.getStackInSlot(MATERIAL).getCount());
     }
 
-    public void playSound() {
+    public void playSound(@Nonnull final ItemStack result) {
         if(hasWorld() && !world.isRemote) world.playSound(null, pos,
-                SmithingContent.BLOCK_SMITHING_TABLE_USE, SoundCategory.BLOCKS,
-                1, MathHelper.nextFloat(world.rand, 0.9f, 1));
+                processor.recipe != null ? processor.recipe.getSound(result) : SmithingContent.BLOCK_SMITHING_TABLE_USE,
+                SoundCategory.BLOCKS, 1, MathHelper.nextFloat(world.rand, 0.9f, 1));
     }
 
     @Override

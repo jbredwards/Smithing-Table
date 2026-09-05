@@ -4,13 +4,16 @@ import com.cleanroommc.groovyscript.api.GroovyBlacklist;
 import com.cleanroommc.groovyscript.api.GroovyLog;
 import com.cleanroommc.groovyscript.api.IIngredient;
 import com.cleanroommc.groovyscript.api.documentation.annotations.MethodDescription;
+import com.cleanroommc.groovyscript.api.documentation.annotations.RecipeBuilderMethodDescription;
 import com.cleanroommc.groovyscript.api.documentation.annotations.RecipeBuilderRegistrationMethod;
 import com.cleanroommc.groovyscript.helper.recipe.AbstractRecipeBuilder;
 import com.cleanroommc.groovyscript.registry.ForgeRegistryWrapper;
+import git.jbredwards.smithing_table.api.SmithingContent;
 import git.jbredwards.smithing_table.api.SmithingRecipe;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundEvent;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -107,8 +110,15 @@ public class GRSSmithingRecipes extends ForgeRegistryWrapper<SmithingRecipe>
 
     public final class Builder extends AbstractRecipeBuilder<SmithingRecipe>
     {
-        @Nullable
-        private IIngredient template = null;
+        @Nullable private IIngredient template = null;
+        @Nullable private SoundEvent sound = null;
+
+        @Nonnull
+        @RecipeBuilderMethodDescription(field = "sound event")
+        public Builder sound(@Nullable final SoundEvent soundEvent) {
+            sound = soundEvent;
+            return this;
+        }
 
         @Nonnull
         @Override
@@ -136,6 +146,7 @@ public class GRSSmithingRecipes extends ForgeRegistryWrapper<SmithingRecipe>
             validateName();
 
             @Nonnull final SmithingRecipe recipe = new SmithingRecipe.Impl(
+                    sound != null ? sound : SmithingContent.BLOCK_SMITHING_TABLE_USE,
                     template != null ? template.toMcIngredient() : Ingredient.EMPTY,
                     input.get(0).toMcIngredient(),
                     input.get(1).toMcIngredient(),

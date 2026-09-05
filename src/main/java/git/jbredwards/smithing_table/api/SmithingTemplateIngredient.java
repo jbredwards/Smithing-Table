@@ -11,6 +11,7 @@ import net.minecraftforge.common.crafting.IIngredientFactory;
 import net.minecraftforge.common.crafting.JsonContext;
 import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.UnmodifiableView;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -60,6 +61,7 @@ public class SmithingTemplateIngredient extends Ingredient
      * @author jbred
      */
     @ApiStatus.AvailableSince("1.0.0")
+    @UnmodifiableView
     @Nonnull
     public final List<SmithingTemplate> getSmithingTemplates() {
         return Collections.unmodifiableList(Arrays.asList(this.matchingTemplates));
