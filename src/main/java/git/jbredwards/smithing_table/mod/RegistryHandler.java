@@ -12,9 +12,12 @@ import git.jbredwards.smithing_table.mod.common.block.TileSmithingTable;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.util.JsonUtils;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
@@ -23,6 +26,8 @@ import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.ConfigManager;
+import net.minecraftforge.common.crafting.CraftingHelper;
+import net.minecraftforge.common.crafting.JsonContext;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.Loader;
@@ -32,8 +37,11 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.registries.RegistryBuilder;
+import org.apache.commons.lang3.CharUtils;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -67,20 +75,39 @@ final class RegistryHandler
 
     @SubscribeEvent
     static void registerRecipes(@Nonnull final RegistryEvent.Register<IRecipe> event) {
+        @Nonnull final JsonContext ctx = new JsonContext(SmithingTable.MOD_ID);
+        @Nonnull final Object[] recipe;
+
+        try {
+            if(!CraftingHelper.processConditions(SmithingTableCfg.recipe, "conditions", ctx)) return;
+            @Nonnull final List<Object> parsed = new ArrayList<>();
+
+            JsonUtils.getJsonArray(SmithingTableCfg.recipe, "pattern").forEach(json -> parsed.add(JsonUtils.getString(json, "pattern")));
+            JsonUtils.getJsonObject(SmithingTableCfg.recipe, "key").entrySet().forEach(entry -> {
+                parsed.add(CharUtils.toChar(entry.getKey()));
+                parsed.add(CraftingHelper.getIngredient(entry.getValue(), ctx));
+            });
+
+            recipe = parsed.toArray();
+        }
+        catch(@Nonnull final Exception ignored) { return; }
+        @Nonnull final ItemStack defaultPlanks = new ItemStack(Blocks.PLANKS);
         @Nonnull final Set<TableData> variants = ItemSmithingTable.getVariants();
         variants.remove(TableData.DEFAULT);
 
         // Register a recipe for each variant.
         @Nonnull final ResourceLocation group = new ResourceLocation(SmithingTable.MOD_ID, "tables");
-        for(@Nonnull final TableData variant : variants) event.getRegistry().register(new ShapedOreRecipe(group,
-                ItemSmithingTable.setVariant(new ItemStack(SmithingContent.SMITHING_TABLE), variant),
-                "II", "##", "##", 'I', "ingotIron", '#', new ItemStack(variant.item, 1, variant.meta)).setRegistryName(
-                        "tables/" + Objects.toString(variant.item.getRegistryName()).replace(':', '/') + '/' + variant.meta));
+        for(@Nonnull final TableData variant : variants) {
+            @Nonnull final CraftingHelper.ShapedPrimer primer = CraftingHelper.parseShaped(recipe);
+
+            primer.input.replaceAll(i -> i.test(defaultPlanks) ? Ingredient.fromStacks(new ItemStack(variant.item, 1, variant.meta)) : i);
+            event.getRegistry().register(new ShapedOreRecipe(group,
+                    ItemSmithingTable.setVariant(new ItemStack(SmithingContent.SMITHING_TABLE), variant), primer).setRegistryName(
+                    "tables/" + Objects.toString(variant.item.getRegistryName()).replace(':', '/') + '/' + variant.meta));
+        }
 
         // Register a generic recipe for the default variant.
-        event.getRegistry().register(new ShapedOreRecipe(group,
-                ItemSmithingTable.setVariant(new ItemStack(SmithingContent.SMITHING_TABLE), TableData.DEFAULT),
-                "II", "##", "##", 'I', "ingotIron", '#', "plankWood").setRegistryName("tables/generic"));
+        event.getRegistry().register(new ShapedOreRecipe(group, ItemSmithingTable.setVariant(new ItemStack(SmithingContent.SMITHING_TABLE), TableData.DEFAULT), recipe).setRegistryName("tables/generic"));
     }
 
     @SubscribeEvent

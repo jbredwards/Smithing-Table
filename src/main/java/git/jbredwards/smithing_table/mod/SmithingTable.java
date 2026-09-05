@@ -23,6 +23,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
+import java.io.File;
 import java.util.Objects;
 
 /**
@@ -55,6 +56,7 @@ public final class SmithingTable
     @Mod.EventHandler
     static void preInit(@Nonnull final FMLPreInitializationEvent event) {
         CraftingHelper.register(new ResourceLocation(MOD_ID, "template"), SmithingTemplateIngredient.FACTORY);
+        SmithingTableCfg.initRecipe(new File(event.getModConfigurationDirectory(), MOD_ID));
     }
 
     @Mod.EventHandler
