@@ -5,6 +5,7 @@ import git.jbredwards.smithing_table.api.SmithingTemplate;
 import git.jbredwards.smithing_table.mod.client.ModelSmithingTable;
 import git.jbredwards.smithing_table.mod.client.ModelSmithingTemplate;
 import git.jbredwards.smithing_table.mod.common.block.TableData;
+import git.jbredwards.smithing_table.mod.common.compat.crafttweaker.CRTSmithingTemplates;
 import git.jbredwards.smithing_table.mod.common.compat.groovyscript.GRSSmithingTemplates;
 import git.jbredwards.smithing_table.mod.common.inventory.ContainerSmithingTable;
 import git.jbredwards.smithing_table.mod.common.item.ItemSmithingTable;
@@ -123,6 +124,7 @@ final class RegistryHandler
 
     @SubscribeEvent
     static void registerTemplates(@Nonnull final RegistryEvent.Register<SmithingTemplate> event) {
+        if(Loader.isModLoaded("crafttweaker")) CRTSmithingTemplates.registerTemplates(event.getRegistry());
         if(Loader.isModLoaded("groovyscript")) GRSSmithingTemplates.registerTemplates(event.getRegistry());
     }
 

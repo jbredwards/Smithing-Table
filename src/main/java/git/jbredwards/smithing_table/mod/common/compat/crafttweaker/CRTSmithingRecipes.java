@@ -2,9 +2,11 @@ package git.jbredwards.smithing_table.mod.common.compat.crafttweaker;
 
 import crafttweaker.CraftTweakerAPI;
 import crafttweaker.IAction;
+import crafttweaker.annotations.OnRegister;
 import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.item.IIngredient;
 import crafttweaker.api.minecraft.CraftTweakerMC;
+import crafttweaker.mc1120.events.ActionApplyEvent;
 import git.jbredwards.smithing_table.api.SmithingContent;
 import git.jbredwards.smithing_table.api.SmithingRecipe;
 import git.jbredwards.smithing_table.mod.SmithingTable;
@@ -12,8 +14,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.LoaderState;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.registries.IForgeRegistryModifiable;
 import stanhebben.zenscript.annotations.Optional;
 import stanhebben.zenscript.annotations.ZenClass;
@@ -36,6 +40,17 @@ public final class CRTSmithingRecipes
 {
     @Nonnull static final List<IAction> addActions = new ArrayList<>();
     @Nonnull static final List<IAction> removeActions = new ArrayList<>();
+
+    @OnRegister
+    public static void preInit() {
+        MinecraftForge.EVENT_BUS.register(CRTSmithingRecipes.class);
+    }
+
+    @SubscribeEvent
+    static void postInit(@Nonnull final ActionApplyEvent.Post event) {
+        removeActions.forEach(CraftTweakerAPI::apply);
+        addActions.forEach(CraftTweakerAPI::apply);
+    }
 
     @ZenMethod
     public static void add(@Nullable final String loc, @Nullable final IIngredient template, @Nullable final IIngredient equipment, @Nullable final IIngredient material, @Nullable final IIngredient output, @Optional @Nullable final String soundLoc) {
