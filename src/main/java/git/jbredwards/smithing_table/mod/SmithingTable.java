@@ -3,6 +3,7 @@ package git.jbredwards.smithing_table.mod;
 import git.jbredwards.smithing_table.Tags;
 import git.jbredwards.smithing_table.api.SmithingTemplateIngredient;
 import git.jbredwards.smithing_table.mod.client.SmithingTableGuiHandler;
+import git.jbredwards.smithing_table.mod.common.compat.crafttweaker.CRTHandler;
 import git.jbredwards.smithing_table.mod.common.item.ItemSmithingTemplate;
 import git.jbredwards.smithing_table.mod.common.compat.AssetMoverHandler;
 import net.minecraft.client.Minecraft;
@@ -16,6 +17,7 @@ import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.fml.common.*;
 import net.minecraftforge.fml.common.event.FMLConstructionEvent;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
@@ -79,5 +81,10 @@ public final class SmithingTable
                 metadata.description = I18n.hasKey("mod." + MOD_ID + ".description") ? I18n.format("mod." + MOD_ID + ".description") : description;
             }
         });
+    }
+
+    @Mod.EventHandler
+    static void postInit(@Nonnull final FMLPostInitializationEvent event) {
+        if(Loader.isModLoaded("crafttweaker")) CRTHandler.postInit();
     }
 }
