@@ -54,14 +54,14 @@ public final class LootFunctionTemplate extends LootFunction implements ICustomL
 
         @Override
         public void serialize(@Nonnull final JsonObject json, @Nonnull final LootFunctionTemplate type, @Nonnull final JsonSerializationContext ctx) {
-            json.addProperty("id", Objects.toString(type.template.getRegistryName()));
+            json.addProperty("name", Objects.toString(type.template.getRegistryName()));
         }
 
         @Nonnull
         @Override
         public LootFunctionTemplate deserialize(@Nonnull final JsonObject json, @Nonnull final JsonDeserializationContext ctx, @Nonnull final LootCondition[] conditionsIn) {
-            @Nullable final SmithingTemplate template = SmithingTemplate.REGISTRY.getValue(new ResourceLocation(JsonUtils.getString(json, "id")));
-            if(template == null) throw new JsonSyntaxException("Expected id to be a smithing template, was unknown string '" + json.getAsJsonPrimitive("id").getAsString() + "'");
+            @Nullable final SmithingTemplate template = SmithingTemplate.REGISTRY.getValue(new ResourceLocation(JsonUtils.getString(json, "name")));
+            if(template == null) throw new JsonSyntaxException("Expected name to be a smithing template, was unknown string '" + json.getAsJsonPrimitive("name").getAsString() + "'");
             else return new LootFunctionTemplate(template, conditionsIn);
         }
     }
