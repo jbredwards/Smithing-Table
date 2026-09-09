@@ -82,10 +82,8 @@ public class SmithingJEIRecipeCategory implements IRecipeCategory<SmithingJEIRec
         @Nullable final ResourceLocation name = recipeWrapper.getRegistryName();
         if(name != null) recipeLayout.getItemStacks().addTooltipCallback((slot, input, ingredient, tooltip) -> {
             if(slot == SmithingSlotInfo.OUTPUT) {
-                @Nullable final ResourceLocation itemName = ingredient.getItem().getRegistryName();
                 @Nonnull final String recipeModId = name.getNamespace();
-
-                if(itemName != null && !recipeModId.equals(itemName.getNamespace())) {
+                if(!recipeModId.equals(ingredient.getItem().getCreatorModId(ingredient))) {
                     @Nullable final String modName = ForgeModIdHelper.getInstance().getFormattedModNameForModId(recipeModId);
                     if(modName != null) tooltip.add(TextFormatting.GRAY + Translator.translateToLocalFormatted("jei.tooltip.recipe.by", modName));
                 }

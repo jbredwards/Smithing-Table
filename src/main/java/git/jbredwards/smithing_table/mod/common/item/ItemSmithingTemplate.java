@@ -10,6 +10,7 @@ import net.minecraft.item.EnumRarity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.common.IRarity;
 import net.minecraftforge.fml.relauncher.Side;
@@ -41,6 +42,18 @@ public final class ItemSmithingTemplate extends Item
         if(tab == getCreativeTab() || tab == CreativeTabs.SEARCH)
             SmithingTemplate.REGISTRY.forEach(template -> items.add(template.serialize()));
         else TAB_LOOKUP.get(tab).forEach(template -> items.add(template.serialize()));
+    }
+
+    @Nullable
+    @Override
+    public String getCreatorModId(@Nonnull final ItemStack stack) {
+        @Nullable final SmithingTemplate template = SmithingTemplate.deserialize(stack);
+        if(template != null) {
+            @Nullable final ResourceLocation loc = template.getRegistryName();
+            if(loc != null) return loc.getNamespace();
+        }
+
+        return super.getCreatorModId(stack);
     }
 
     @Nonnull
