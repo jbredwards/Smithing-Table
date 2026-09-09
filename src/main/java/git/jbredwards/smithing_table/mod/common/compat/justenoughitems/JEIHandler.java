@@ -2,7 +2,9 @@ package git.jbredwards.smithing_table.mod.common.compat.justenoughitems;
 
 import git.jbredwards.smithing_table.api.SmithingContent;
 import git.jbredwards.smithing_table.api.SmithingRecipe;
+import git.jbredwards.smithing_table.api.SmithingSlotInfo;
 import git.jbredwards.smithing_table.mod.client.gui.GuiSmithingTable;
+import git.jbredwards.smithing_table.mod.common.inventory.ContainerSmithingTable;
 import git.jbredwards.smithing_table.mod.common.item.ItemSmithingTable;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.IModRegistry;
@@ -30,6 +32,7 @@ public final class JEIHandler implements IModPlugin
         registry.addRecipeClickArea(GuiSmithingTable.class, 68, 49, 22, 15, SmithingJEIRecipeCategory.ID);
         registry.addRecipeClickArea(GuiSmithingTable.Sub.class, 95, 49, 22, 15, SmithingJEIRecipeCategory.ID);
         registry.addRecipeCatalyst(new ItemStack(SmithingContent.SMITHING_TABLE, 1, OreDictionary.WILDCARD_VALUE), SmithingJEIRecipeCategory.ID);
+        registry.getRecipeTransferRegistry().addRecipeTransferHandler(ContainerSmithingTable.class, SmithingJEIRecipeCategory.ID, SmithingSlotInfo.TEMPLATE , 3, SmithingSlotInfo.OUTPUT + 1, 36);
     }
 
     @Override
@@ -39,7 +42,6 @@ public final class JEIHandler implements IModPlugin
 
     @Override
     public void registerItemSubtypes(@Nonnull final ISubtypeRegistry subtypeRegistry) {
-        subtypeRegistry.registerSubtypeInterpreter(Item.getItemFromBlock(SmithingContent.SMITHING_TABLE),
-                stack -> ItemSmithingTable.getVariant(stack).toString());
+        subtypeRegistry.registerSubtypeInterpreter(Item.getItemFromBlock(SmithingContent.SMITHING_TABLE), stack -> ItemSmithingTable.getVariant(stack).toString());
     }
 }
