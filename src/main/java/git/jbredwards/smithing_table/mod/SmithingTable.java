@@ -3,12 +3,14 @@ package git.jbredwards.smithing_table.mod;
 import git.jbredwards.smithing_table.Tags;
 import git.jbredwards.smithing_table.api.SmithingTemplateIngredient;
 import git.jbredwards.smithing_table.mod.client.SmithingTableGuiHandler;
+import git.jbredwards.smithing_table.mod.common.inventory.LootFunctionTemplate;
 import git.jbredwards.smithing_table.mod.common.item.ItemSmithingTemplate;
 import git.jbredwards.smithing_table.mod.common.compat.AssetMoverHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.resources.IReloadableResourceManager;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.storage.loot.functions.LootFunctionManager;
 import net.minecraftforge.client.resource.ISelectiveResourceReloadListener;
 import net.minecraftforge.client.resource.VanillaResourceType;
 import net.minecraftforge.common.MinecraftForge;
@@ -57,6 +59,7 @@ public final class SmithingTable
     static void preInit(@Nonnull final FMLPreInitializationEvent event) {
         CraftingHelper.register(new ResourceLocation(MOD_ID, "template"), SmithingTemplateIngredient.FACTORY);
         SmithingTableCfg.initRecipe(new File(event.getModConfigurationDirectory(), MOD_ID));
+        LootFunctionManager.registerFunction(new LootFunctionTemplate.Serializer());
     }
 
     @Mod.EventHandler

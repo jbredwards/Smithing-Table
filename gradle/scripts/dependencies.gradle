@@ -35,6 +35,7 @@ dependencies {
     // Include OSXNarratorBlocker by default for the dev env, for M1+ Macs
     runtimeOnly 'com.cleanroommc:osxnarratorblocker:1.0'
     // Optional compatibility
+    compileOnly rfg.deobf('curse.maven:jer-240630:2728585')
     compileOnly rfg.deobf('maven.modrinth:biomes-o-plenty:7.0.1.2445')
     compileOnly rfg.deobf('maven.modrinth:groovyscript:1.4.3')
     implementation rfg.deobf('maven.modrinth:jei:4.16.1.1000')

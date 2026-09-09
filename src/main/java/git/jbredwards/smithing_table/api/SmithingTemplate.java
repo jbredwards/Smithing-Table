@@ -132,7 +132,16 @@ public class SmithingTemplate extends IForgeRegistryEntry.Impl<SmithingTemplate>
     @ApiStatus.AvailableSince("1.0.0")
     @Nonnull
     public final ItemStack serialize() {
-        @Nonnull final ItemStack stack = new ItemStack(SmithingContent.SMITHING_TEMPLATE);
+        return this.serialize(new ItemStack(SmithingContent.SMITHING_TEMPLATE));
+    }
+
+    /**
+     * @return The provided stack with this smithing template applied.
+     * @author jbred
+     */
+    @ApiStatus.AvailableSince("1.0.0")
+    @Nonnull
+    public final ItemStack serialize(@Nonnull final ItemStack stack) {
         stack.getOrCreateSubCompound(SmithingTable.MOD_ID).setString("TemplateId", Objects.toString(this.getRegistryName()));
         return stack;
     }
