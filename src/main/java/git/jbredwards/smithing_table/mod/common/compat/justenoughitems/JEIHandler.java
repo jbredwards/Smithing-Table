@@ -3,6 +3,7 @@ package git.jbredwards.smithing_table.mod.common.compat.justenoughitems;
 import git.jbredwards.smithing_table.api.SmithingContent;
 import git.jbredwards.smithing_table.api.SmithingRecipe;
 import git.jbredwards.smithing_table.api.SmithingSlotInfo;
+import git.jbredwards.smithing_table.api.SmithingTemplate;
 import git.jbredwards.smithing_table.mod.client.gui.GuiSmithingTable;
 import git.jbredwards.smithing_table.mod.common.inventory.ContainerSmithingTable;
 import git.jbredwards.smithing_table.mod.common.item.ItemSmithingTable;
@@ -16,6 +17,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.OreDictionary;
 
 import javax.annotation.Nonnull;
+import java.util.Objects;
 
 /**
  *
@@ -43,5 +45,6 @@ public final class JEIHandler implements IModPlugin
     @Override
     public void registerItemSubtypes(@Nonnull final ISubtypeRegistry subtypeRegistry) {
         subtypeRegistry.registerSubtypeInterpreter(Item.getItemFromBlock(SmithingContent.SMITHING_TABLE), stack -> ItemSmithingTable.getVariant(stack).toString());
+        subtypeRegistry.registerSubtypeInterpreter(SmithingContent.SMITHING_TEMPLATE, stack -> Objects.toString(SmithingTemplate.deserialize(stack)));
     }
 }
