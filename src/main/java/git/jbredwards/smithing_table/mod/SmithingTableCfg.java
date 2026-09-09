@@ -51,8 +51,11 @@ public final class SmithingTableCfg
     @Config.LangKey("cfg.smithing_table.gui.armorStandBackground")
     public static boolean armorStandBackground = true;
 
+    @Config.LangKey("cfg.smithing_table.gui.equipmentOverlay")
+    public static boolean equipmentOverlay = true;
+
     @Config.LangKey("cfg.smithing_table.gui.materialOverlay")
-    public static boolean materialOverlay = false;
+    public static boolean materialOverlay = true;
 
     @Config.LangKey("cfg.smithing_table.gui.templateOverlay")
     public static boolean templateOverlay = true;

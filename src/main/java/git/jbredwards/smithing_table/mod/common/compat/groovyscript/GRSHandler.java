@@ -76,7 +76,9 @@ public final class GRSHandler implements GroovyPlugin
         @Override
         public IIngredient exactCopy() {
             @Nonnull final Wrapper wrapper = new Wrapper(ingredient.getSmithingTemplates().toArray(new SmithingTemplate[0]));
-            wrapper.transform(transformer).when(matchCondition).setAmount(amount);
+            wrapper.transformer = transformer;
+            wrapper.matchCondition = matchCondition;
+            wrapper.amount = amount;
             return wrapper;
         }
 
@@ -113,6 +115,16 @@ public final class GRSHandler implements GroovyPlugin
         @Override
         public boolean matches(@Nonnull final ItemStack itemStack) {
             return ingredient.test(itemStack);
+        }
+
+        /**
+         * Use {@code smithing_template_instance('').serialize()} instead.
+         * This method only exists just in case someone forgets the "_instance" part of the method name.
+         */
+        @Nonnull
+        public ItemStack serialize() {
+            return ingredient.getSmithingTemplates().isEmpty() ? ItemStack.EMPTY : ItemHandlerHelper.copyStackWithSize(
+                    ingredient.getSmithingTemplates().get(0).serialize(), Math.max(amount, 1));
         }
     }
 }

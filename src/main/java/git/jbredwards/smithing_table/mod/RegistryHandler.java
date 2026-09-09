@@ -4,10 +4,11 @@ import git.jbredwards.smithing_table.api.SmithingContent;
 import git.jbredwards.smithing_table.api.SmithingTemplate;
 import git.jbredwards.smithing_table.mod.client.ModelSmithingTable;
 import git.jbredwards.smithing_table.mod.client.ModelSmithingTemplate;
+import git.jbredwards.smithing_table.mod.client.TextureSmithingSlot;
+import git.jbredwards.smithing_table.mod.client.gui.GuiSmithingTable;
 import git.jbredwards.smithing_table.mod.common.block.TableData;
 import git.jbredwards.smithing_table.mod.common.compat.crafttweaker.CRTSmithingTemplates;
 import git.jbredwards.smithing_table.mod.common.compat.groovyscript.GRSSmithingTemplates;
-import git.jbredwards.smithing_table.mod.common.inventory.ContainerSmithingTable;
 import git.jbredwards.smithing_table.mod.common.item.ItemSmithingTable;
 import git.jbredwards.smithing_table.mod.common.block.TileSmithingTable;
 import net.minecraft.block.Block;
@@ -41,10 +42,8 @@ import net.minecraftforge.registries.RegistryBuilder;
 import org.apache.commons.lang3.CharUtils;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -132,8 +131,23 @@ final class RegistryHandler
     @SubscribeEvent
     static void registerTextures(@Nonnull final TextureStitchEvent.Pre event) {
         if(event.getMap() == Minecraft.getMinecraft().getTextureMapBlocks()) {
-            event.getMap().registerSprite(ContainerSmithingTable.MATERIAL_OVERLAY);
-            event.getMap().registerSprite(ContainerSmithingTable.TEMPLATE_OVERLAY);
+            if(SmithingTemplate.REGISTRY.getKeys().isEmpty()) event.getMap().registerSprite(GuiSmithingTable.SLOT_BACK);
+            else event.getMap().setTextureEntry(new TextureSmithingSlot(
+                    SmithingTemplate.REGISTRY.getValuesCollection().stream().map(st -> st.templateSlotTexture).distinct().collect(Collectors.toList()),
+                    GuiSmithingTable.getTemplateTexture()));
+
+            @Nonnull final Set<String> cache = new HashSet<>();
+            for(@Nonnull final SmithingTemplate template : SmithingTemplate.REGISTRY) {
+                if(template.equipmentSlotInfo != null) {
+                    @Nonnull final String name = GuiSmithingTable.joinInfoTextures(template.equipmentSlotInfo);
+                    if(cache.add(name)) event.getMap().setTextureEntry(new TextureSmithingSlot(template.equipmentSlotInfo.textures(), name));
+                }
+
+                if(template.materialSlotInfo != null) {
+                    @Nonnull final String name = GuiSmithingTable.joinInfoTextures(template.materialSlotInfo);
+                    if(cache.add(name)) event.getMap().setTextureEntry(new TextureSmithingSlot(template.materialSlotInfo.textures(), name));
+                }
+            }
         }
     }
 

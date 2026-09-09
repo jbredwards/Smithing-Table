@@ -1,9 +1,9 @@
 package git.jbredwards.smithing_table.mod.common.compat.justenoughitems;
 
 import git.jbredwards.smithing_table.api.SmithingContent;
+import git.jbredwards.smithing_table.api.SmithingSlotInfo;
 import git.jbredwards.smithing_table.mod.SmithingTable;
 import git.jbredwards.smithing_table.mod.client.gui.GuiSmithingTable;
-import git.jbredwards.smithing_table.mod.common.block.TileSmithingTable;
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IRecipeLayout;
@@ -81,7 +81,7 @@ public class SmithingJEIRecipeCategory implements IRecipeCategory<SmithingJEIRec
     public void setRecipe(@Nonnull final IRecipeLayout recipeLayout, @Nonnull final SmithingJEIRecipeWrapper recipeWrapper, @Nonnull final IIngredients ingredients) {
         @Nullable final ResourceLocation name = recipeWrapper.getRegistryName();
         if(name != null) recipeLayout.getItemStacks().addTooltipCallback((slot, input, ingredient, tooltip) -> {
-            if(slot == TileSmithingTable.OUTPUT) {
+            if(slot == SmithingSlotInfo.OUTPUT) {
                 @Nullable final ResourceLocation itemName = ingredient.getItem().getRegistryName();
                 @Nonnull final String recipeModId = name.getNamespace();
 
@@ -96,10 +96,10 @@ public class SmithingJEIRecipeCategory implements IRecipeCategory<SmithingJEIRec
             }
         });
 
-        recipeLayout.getItemStacks().init(TileSmithingTable.TEMPLATE, true, 0, 6);
-        recipeLayout.getItemStacks().init(TileSmithingTable.EQUIPMENT, true, 18, 6);
-        recipeLayout.getItemStacks().init(TileSmithingTable.MATERIAL, true, 36, 6);
-        recipeLayout.getItemStacks().init(TileSmithingTable.OUTPUT, false, 90, 6);
+        recipeLayout.getItemStacks().init(SmithingSlotInfo.TEMPLATE, true, 0, 6);
+        recipeLayout.getItemStacks().init(SmithingSlotInfo.EQUIPMENT, true, 18, 6);
+        recipeLayout.getItemStacks().init(SmithingSlotInfo.MATERIAL, true, 36, 6);
+        recipeLayout.getItemStacks().init(SmithingSlotInfo.OUTPUT, false, 90, 6);
         recipeLayout.getItemStacks().set(ingredients);
     }
 }

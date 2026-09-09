@@ -1,6 +1,7 @@
 package git.jbredwards.smithing_table.mod.common.block;
 
 import git.jbredwards.smithing_table.api.SmithingContent;
+import git.jbredwards.smithing_table.api.SmithingSlotInfo;
 import git.jbredwards.smithing_table.mod.client.SmithingTableGuiHandler;
 import git.jbredwards.smithing_table.mod.common.item.ItemSmithingTable;
 import net.minecraft.block.BlockContainer;
@@ -80,7 +81,7 @@ public class BlockSmithingTable extends BlockContainer
         @Nullable final TileEntity tile = worldIn.getTileEntity(pos);
         if(tile instanceof TileSmithingTable) {
             @Nonnull final IItemHandler inv = ((TileSmithingTable)tile).basicInventory;
-            for(int slot = 0; slot < TileSmithingTable.OUTPUT; slot++) InventoryHelper.spawnItemStack(worldIn, pos.getX(), pos.getY(), pos.getZ(), inv.getStackInSlot(slot));
+            for(int slot = 0; slot < SmithingSlotInfo.OUTPUT; slot++) InventoryHelper.spawnItemStack(worldIn, pos.getX(), pos.getY(), pos.getZ(), inv.getStackInSlot(slot));
             worldIn.updateComparatorOutputLevel(pos, this);
         }
 

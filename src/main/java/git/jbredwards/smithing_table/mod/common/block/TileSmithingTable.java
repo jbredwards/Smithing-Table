@@ -28,6 +28,11 @@ import net.minecraftforge.items.ItemStackHandler;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import static git.jbredwards.smithing_table.api.SmithingSlotInfo.TEMPLATE;
+import static git.jbredwards.smithing_table.api.SmithingSlotInfo.EQUIPMENT;
+import static git.jbredwards.smithing_table.api.SmithingSlotInfo.MATERIAL;
+import static git.jbredwards.smithing_table.api.SmithingSlotInfo.OUTPUT;
+
 /**
  *
  * @author jbred
@@ -35,8 +40,6 @@ import javax.annotation.Nullable;
  */
 public class TileSmithingTable extends TileEntity implements IWorldNameable
 {
-    public static final int TEMPLATE = 0, EQUIPMENT = 1, MATERIAL = 2, OUTPUT = 3;
-
     @Nonnull
     public final ItemStackHandler basicInventory = new ItemStackHandler(4) {
         @Override

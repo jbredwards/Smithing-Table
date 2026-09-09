@@ -14,11 +14,13 @@ import com.cleanroommc.groovyscript.mapper.ObjectMappers;
 import com.cleanroommc.groovyscript.registry.NamedRegistry;
 import com.cleanroommc.groovyscript.sandbox.FileUtil;
 import com.google.gson.JsonParser;
+import git.jbredwards.smithing_table.api.SmithingSlotInfo;
 import git.jbredwards.smithing_table.api.SmithingTemplate;
 import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.common.IRarity;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.registries.IForgeRegistry;
@@ -27,6 +29,7 @@ import org.jetbrains.annotations.ApiStatus;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.File;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
@@ -115,6 +118,7 @@ public class GRSSmithingTemplates extends NamedRegistry
     public class Builder implements IRecipeBuilder<SmithingTemplate>
     {
         @Nonnull private final SmithingTemplate propertyHolder = new SmithingTemplate(new ModelResourceLocation("missingno"), false);
+        @Nullable private ResourceLocation guiSlotTex = SmithingSlotInfo.EMPTY_SLOT_TEMPLATE;
         @Nullable private ModelResourceLocation model;
         @Nullable private ResourceLocation name;
 
@@ -150,6 +154,27 @@ public class GRSSmithingTemplates extends NamedRegistry
         @RecipeBuilderMethodDescription(field = "rarity")
         public Builder rarity(@Nonnull final IRarity rarity) {
             propertyHolder.rarity = rarity;
+            return this;
+        }
+
+        @Nonnull
+        @RecipeBuilderMethodDescription(field = "template slot texture")
+        public Builder templateSlotTexture(@Nonnull final ResourceLocation texture) {
+            guiSlotTex = texture;
+            return this;
+        }
+
+        @Nonnull
+        @RecipeBuilderMethodDescription(field = "equipment slot info")
+        public Builder equipmentSlotInfo(@Nonnull final String hoverText, @Nonnull final Collection<ResourceLocation> textures) {
+            propertyHolder.equipmentSlotInfo = new SmithingSlotInfo.Impl(new TextComponentTranslation(hoverText), textures);
+            return this;
+        }
+
+        @Nonnull
+        @RecipeBuilderMethodDescription(field = "material slot info")
+        public Builder materialSlotInfo(@Nonnull final String hoverText, @Nonnull final Collection<ResourceLocation> textures) {
+            propertyHolder.materialSlotInfo = new SmithingSlotInfo.Impl(new TextComponentTranslation(hoverText), textures);
             return this;
         }
 
@@ -194,6 +219,7 @@ public class GRSSmithingTemplates extends NamedRegistry
             AbstractRecipeBuilder.validateCustom(msg, propertyHolder.maxDurability, 0, OreDictionary.WILDCARD_VALUE - 1, "durability");
             AbstractRecipeBuilder.validateCustom(msg, propertyHolder.maxStackSize, 0, 64, "stack size");
             if(propertyHolder.rarity == null) msg.add("Rarity cannot be null");
+            if(guiSlotTex == null) msg.add("Template slot texture cannot be null");
 
             final boolean missingModel = model == null;
             final boolean missingName = name == null;
@@ -215,6 +241,8 @@ public class GRSSmithingTemplates extends NamedRegistry
             template.maxDurability = propertyHolder.maxDurability;
             template.maxStackSize = propertyHolder.maxStackSize;
             template.rarity = propertyHolder.rarity;
+            template.equipmentSlotInfo = propertyHolder.equipmentSlotInfo;
+            template.materialSlotInfo = propertyHolder.materialSlotInfo;
 
             GRSSmithingTemplates.this.register(null, template);
             return template;
@@ -224,7 +252,7 @@ public class GRSSmithingTemplates extends NamedRegistry
         @GroovyBlacklist
         @ApiStatus.OverrideOnly
         protected SmithingTemplate build() {
-            return new SmithingTemplate(model, false);
+            return new SmithingTemplate(model, guiSlotTex, false);
         }
     }
 }

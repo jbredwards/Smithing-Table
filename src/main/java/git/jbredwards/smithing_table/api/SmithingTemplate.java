@@ -36,6 +36,27 @@ public class SmithingTemplate extends IForgeRegistryEntry.Impl<SmithingTemplate>
     public static final IForgeRegistry<SmithingTemplate> REGISTRY = Objects.requireNonNull(GameRegistry.findRegistry(SmithingTemplate.class), "Registry was loaded too early!");
 
     /**
+     * Gui template slot texture. This texture is stitched to other non-duplicate template slot textures.
+     */
+    @ApiStatus.AvailableSince("1.0.0")
+    @Nonnull
+    public final ResourceLocation templateSlotTexture;
+
+    /**
+     * Gui render info for the equipment slot, while this smithing template is in the template slot.
+     */
+    @ApiStatus.AvailableSince("1.0.0")
+    @Nullable
+    public SmithingSlotInfo equipmentSlotInfo = null;
+
+    /**
+     * Gui render info for the material slot, while this smithing template is in the template slot.
+     */
+    @ApiStatus.AvailableSince("1.0.0")
+    @Nullable
+    public SmithingSlotInfo materialSlotInfo = null;
+
+    /**
      * The creative tabs for this smithing template.
      * <br> Note: This smithing template will always appear in the "Smitning Table" and "Search" creative tabs.
      */
@@ -83,12 +104,25 @@ public class SmithingTemplate extends IForgeRegistryEntry.Impl<SmithingTemplate>
      */
     @ApiStatus.AvailableSince("1.0.0")
     public SmithingTemplate(@Nonnull final ModelResourceLocation model, final boolean generateRegistryName) {
+        this(model, SmithingSlotInfo.EMPTY_SLOT_TEMPLATE, generateRegistryName);
+    }
+
+    /**
+     * @param model The model location for this smithing template.
+     * @param templateSlotTexture Gui template slot texture.
+     * @param generateRegistryName True to generate a registry name from the model location.
+     * @throws NullPointerException If model is null.
+     * @author jbred
+     */
+    @ApiStatus.AvailableSince("1.0.0")
+    public SmithingTemplate(@Nonnull final ModelResourceLocation model, @Nonnull final ResourceLocation templateSlotTexture, final boolean generateRegistryName) {
         if(generateRegistryName) {
             if(model.getVariant().equals("inventory")) this.setRegistryName(model);
             else this.setRegistryName(model.getNamespace(), model.getVariant());
         }
 
         this.model = Objects.requireNonNull(model);
+        this.templateSlotTexture = Objects.requireNonNull(templateSlotTexture);
     }
 
     /**
