@@ -170,6 +170,7 @@ public class SmithingTemplate extends IForgeRegistryEntry.Impl<SmithingTemplate>
     @ApiStatus.AvailableSince("1.0.0")
     @Nullable
     public static SmithingTemplate deserialize(@Nonnull final ItemStack stack) {
+        if(stack.isEmpty()) return null;
         @Nullable final NBTTagCompound nbt = stack.getSubCompound(SmithingTable.MOD_ID);
         return nbt == null ? null : REGISTRY.getValue(new ResourceLocation(nbt.getString("TemplateId")));
     }
