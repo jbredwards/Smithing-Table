@@ -92,6 +92,11 @@ public interface SmithingRecipe extends IForgeRegistryEntry<SmithingRecipe>
         @Nonnull final ItemStack equipment = smithingInventory.getStackInSlot(1);
         @Nonnull final ItemStack result = getResult().copy();
 
+        if(result.getMaxDamage() != 0 && equipment.getMaxDamage() != 0) {
+            final int damage = equipment.getItemDamage();
+            if(damage <= result.getMaxDamage()) result.setItemDamage(damage);
+        }
+
         if(equipment.hasTagCompound()) {
             @Nonnull final NBTTagCompound nbt = equipment.getTagCompound().copy();
             if(result.hasTagCompound()) nbt.merge(result.getTagCompound());
