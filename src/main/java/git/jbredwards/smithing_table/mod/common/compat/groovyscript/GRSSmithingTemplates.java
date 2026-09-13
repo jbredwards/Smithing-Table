@@ -19,14 +19,12 @@ package git.jbredwards.smithing_table.mod.common.compat.groovyscript;
 import com.cleanroommc.groovyscript.GroovyScript;
 import com.cleanroommc.groovyscript.api.GroovyBlacklist;
 import com.cleanroommc.groovyscript.api.GroovyLog;
-import com.cleanroommc.groovyscript.api.Result;
 import com.cleanroommc.groovyscript.api.documentation.annotations.MethodDescription;
 import com.cleanroommc.groovyscript.api.documentation.annotations.RecipeBuilderMethodDescription;
 import com.cleanroommc.groovyscript.api.documentation.annotations.RecipeBuilderRegistrationMethod;
 import com.cleanroommc.groovyscript.helper.JsonHelper;
 import com.cleanroommc.groovyscript.helper.recipe.AbstractRecipeBuilder;
 import com.cleanroommc.groovyscript.helper.recipe.IRecipeBuilder;
-import com.cleanroommc.groovyscript.mapper.ObjectMappers;
 import com.cleanroommc.groovyscript.registry.NamedRegistry;
 import com.cleanroommc.groovyscript.sandbox.FileUtil;
 import com.google.gson.JsonParser;
@@ -140,8 +138,8 @@ public class GRSSmithingTemplates extends NamedRegistry
 
         @Nonnull
         @RecipeBuilderMethodDescription(field = "creative tabs")
-        public Builder creativeTabs(@Nullable final CreativeTabs... tabs) {
-            propertyHolder.creativeTabs = tabs;
+        public Builder creativeTabs(@Nullable final Collection<CreativeTabs> tabs) {
+            propertyHolder.creativeTabs = tabs == null || tabs.isEmpty() ? null : tabs.toArray(new CreativeTabs[0]);
             return this;
         }
 
@@ -196,16 +194,15 @@ public class GRSSmithingTemplates extends NamedRegistry
 
         @Nonnull
         @RecipeBuilderMethodDescription(field = "model")
-        public Builder model(@Nonnull final String model) {
-            @Nonnull final Result<ResourceLocation> result = ObjectMappers.parseResourceLocation(model);
-            if(result.hasError()) GroovyLog.get().error(result.getError());
-            return model(result.hasError() ? new ResourceLocation(GroovyScript.getRunConfig().getPackId(), model) : result.getValue());
+        public Builder model(@Nonnull final String location) {
+            model = location.indexOf('#') != -1 ? new ModelResourceLocation(location) : new ModelResourceLocation(location, "inventory");
+            return this;
         }
 
         @Nonnull
         @RecipeBuilderMethodDescription(field = "model")
-        public Builder model(@Nonnull final ResourceLocation model) {
-            return model(model, "inventory");
+        public Builder model(@Nonnull final ResourceLocation location) {
+            return model(location, "inventory");
         }
 
         @Nonnull
