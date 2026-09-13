@@ -49,7 +49,7 @@ public final class ItemSmithingTemplate extends Item
         TAB_LOOKUP.clear();
         SmithingTemplate.REGISTRY.forEach(template -> {
             @Nullable final CreativeTabs[] tabs = template.creativeTabs;
-            if(tabs != null) for(@Nonnull final CreativeTabs tab : tabs) TAB_LOOKUP.put(tab, template);
+            if(tabs != null) for(@Nullable final CreativeTabs tab : tabs) if(tab != null) TAB_LOOKUP.put(tab, template);
         });
     }
 
