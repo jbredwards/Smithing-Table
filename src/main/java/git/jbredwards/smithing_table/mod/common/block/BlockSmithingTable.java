@@ -38,6 +38,7 @@ import net.minecraft.stats.StatList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.Explosion;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.property.IExtendedBlockState;
@@ -183,5 +184,15 @@ public class BlockSmithingTable extends BlockContainer
     @Override
     public boolean canRenderInLayer(@Nonnull final IBlockState state, @Nonnull final BlockRenderLayer layer) {
         return true; // Handled by model.
+    }
+
+    @Override
+    public float getBlockHardness(@Nonnull final IBlockState blockState, @Nullable final World worldIn, @Nullable final BlockPos pos) {
+        return worldIn != null && pos != null ? TileSmithingTable.getVariant(worldIn, pos).getBlockState().getBlockHardness(worldIn, pos) : blockHardness;
+    }
+
+    @Override
+    public float getExplosionResistance(@Nonnull final World world, @Nonnull final BlockPos pos, @Nullable final Entity exploder, @Nonnull final Explosion explosion) {
+        return TileSmithingTable.getVariant(world, pos).getBlock().getExplosionResistance(exploder);
     }
 }
