@@ -1,7 +1,11 @@
 {
   "blocks.smithing_table.use": {
-    "type": "event",
-    "name": "minecraft:block.anvil.use",
-    "subtitle": "subtitle.smithing_table.use"
+    "sounds": [
+      {
+        "type": "event",
+        "name": "minecraft:block.anvil.use",
+        "subtitle": "subtitle.smithing_table.use"
+      }
+    ]
   }
 }
