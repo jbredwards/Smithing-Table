@@ -58,6 +58,7 @@ public final class GRSHandler implements GroovyPlugin
     public void onCompatLoaded(@Nonnull final GroovyContainer<?> groovyContainer) {
         groovyContainer.addProperty(GRSSmithingRecipes.INSTANCE);
         groovyContainer.addProperty(GRSSmithingTemplates.INSTANCE);
+        groovyContainer.addProperty(GRSSmithingVariants.INSTANCE);
         groovyContainer.objectMapperBuilder("smithing_template_instance", SmithingTemplate.class)
                 .parser(IObjectParser.wrapForgeRegistry(SmithingTemplate.REGISTRY))
                 .completer(SmithingTemplate.REGISTRY)

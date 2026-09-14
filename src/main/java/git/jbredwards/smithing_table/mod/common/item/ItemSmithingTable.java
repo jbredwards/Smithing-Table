@@ -34,6 +34,7 @@ import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.oredict.OreDictionary;
+import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -53,10 +54,35 @@ public class ItemSmithingTable extends ItemBlock
         setHasSubtypes(true);
     }
 
+    protected static boolean customVariantsOnly() {
+        return REMOVED_VARIANTS.size() == 1 && REMOVED_VARIANTS.contains(null);
+    }
+
+    /**
+     * Allows modpack developers to control smithing table variants.
+     * <br>Mods should not make changes to these lists, since they can be reloaded.
+     *
+     */
+    @ApiStatus.Internal
+    @Nonnull public static final Set<TableData> CUSTOM_VARIANTS = new LinkedHashSet<>(), REMOVED_VARIANTS = new LinkedHashSet<>();
+    @Nonnull public static Set<TableData> getVariants() {
+        @Nonnull final Set<TableData> variants;
+        if(customVariantsOnly()) variants = new LinkedHashSet<>();
+        else {
+            variants = getDefaultVariants();
+            variants.removeAll(REMOVED_VARIANTS);
+        }
+
+        variants.add(TableData.DEFAULT);
+        variants.addAll(CUSTOM_VARIANTS);
+        return variants;
+    }
+
     @Nonnull
     @Override
     public String getItemStackDisplayName(@Nonnull final ItemStack stack) {
         @Nonnull final TableData variant = getVariant(stack);
+        if(variant == TableData.DEFAULT && customVariantsOnly() && CUSTOM_VARIANTS.isEmpty()) return super.getItemStackDisplayName(stack);
         @Nonnull final String root = stack.getTranslationKey();
         // Use special name, if present.
         @Nonnull final String variantKey = root +
@@ -69,8 +95,9 @@ public class ItemSmithingTable extends ItemBlock
                 .replaceAll(I18n.translateToLocal(root + ".regex"), "").trim(), super.getItemStackDisplayName(stack));
     }
 
+    @ApiStatus.Internal
     @Nonnull
-    public static Set<TableData> getVariants() {
+    public static Set<TableData> getDefaultVariants() {
         @Nonnull final Set<TableData> variants = new LinkedHashSet<>();
         variants.add(TableData.DEFAULT);
 

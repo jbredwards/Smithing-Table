@@ -108,7 +108,7 @@ final class RegistryHandler
         }
         catch(@Nonnull final Exception ignored) { return; }
         @Nonnull final ItemStack defaultPlanks = new ItemStack(Blocks.PLANKS);
-        @Nonnull final Set<TableData> variants = ItemSmithingTable.getVariants();
+        @Nonnull final Set<TableData> variants = ItemSmithingTable.getDefaultVariants();
         variants.remove(TableData.DEFAULT);
 
         // Register a recipe for each variant.
