@@ -19,6 +19,7 @@ cfg.smithing_table.gui.templateOverlay=Gui Template Slot Overlay
 cfg.smithing_table.gui.templateOverlay.tooltip=Whether an overlay texture should be drawn over the template slot in the smithing table gui.
 
 itemGroup.smithing_table:tab=Smithing Table
+item.smithing_table.template.name=Uncraftable Smithing Template
 smithing_table.container.smithingTable=Smithing Table
 smithing_table:jei_category=Smithing
 subtitle.smithing_table.use=Smithing Table used
