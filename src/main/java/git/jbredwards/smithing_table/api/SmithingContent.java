@@ -18,6 +18,7 @@ package git.jbredwards.smithing_table.api;
 
 import git.jbredwards.smithing_table.mod.SmithingTable;
 import git.jbredwards.smithing_table.mod.common.block.BlockSmithingTable;
+import git.jbredwards.smithing_table.mod.common.item.ItemSmithingTable;
 import git.jbredwards.smithing_table.mod.common.item.ItemSmithingTemplate;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.MapColor;
@@ -57,6 +58,13 @@ public final class SmithingContent
     public static final Block SMITHING_TABLE = new BlockSmithingTable(Material.WOOD, MapColor.BROWN_STAINED_HARDENED_CLAY);
 
     /**
+     * The smithing table item instance.
+     */
+    @ApiStatus.AvailableSince("1.0.0")
+    @Nonnull
+    public static final Item SMITHING_TABLE_ITEM = new ItemSmithingTable(SmithingContent.SMITHING_TABLE);
+
+    /**
      * The smithing template item instance.
      */
     @ApiStatus.AvailableSince("1.0.0")
@@ -78,7 +86,7 @@ public final class SmithingContent
         @SideOnly(Side.CLIENT)
         @Override
         public ItemStack createIcon() {
-            return Item.getItemFromBlock(SmithingContent.SMITHING_TABLE).getDefaultInstance();
+            return SMITHING_TABLE_ITEM.getDefaultInstance();
         }
     }.setBackgroundImageName("item_search.png");
 }

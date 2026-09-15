@@ -28,7 +28,6 @@ import mezz.jei.api.IModRegistry;
 import mezz.jei.api.ISubtypeRegistry;
 import mezz.jei.api.JEIPlugin;
 import mezz.jei.api.recipe.IRecipeCategoryRegistration;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.OreDictionary;
 
@@ -49,7 +48,7 @@ public final class JEIHandler implements IModPlugin
         registry.addRecipes(SmithingRecipe.REGISTRY.getValuesCollection(), SmithingJEIRecipeCategory.ID);
         registry.addRecipeClickArea(GuiSmithingTable.class, 68, 49, 22, 15, SmithingJEIRecipeCategory.ID);
         registry.addRecipeClickArea(GuiSmithingTable.Sub.class, 95, 49, 22, 15, SmithingJEIRecipeCategory.ID);
-        registry.addRecipeCatalyst(new ItemStack(SmithingContent.SMITHING_TABLE, 1, OreDictionary.WILDCARD_VALUE), SmithingJEIRecipeCategory.ID);
+        registry.addRecipeCatalyst(new ItemStack(SmithingContent.SMITHING_TABLE_ITEM, 1, OreDictionary.WILDCARD_VALUE), SmithingJEIRecipeCategory.ID);
         registry.getRecipeTransferRegistry().addRecipeTransferHandler(ContainerSmithingTable.class, SmithingJEIRecipeCategory.ID, SmithingSlotInfo.TEMPLATE , 3, SmithingSlotInfo.OUTPUT + 1, 36);
     }
 
@@ -60,7 +59,7 @@ public final class JEIHandler implements IModPlugin
 
     @Override
     public void registerItemSubtypes(@Nonnull final ISubtypeRegistry subtypeRegistry) {
-        subtypeRegistry.registerSubtypeInterpreter(Item.getItemFromBlock(SmithingContent.SMITHING_TABLE), stack -> ItemSmithingTable.getVariant(stack).toString());
+        subtypeRegistry.registerSubtypeInterpreter(SmithingContent.SMITHING_TABLE_ITEM, stack -> ItemSmithingTable.getVariant(stack).toString());
         subtypeRegistry.registerSubtypeInterpreter(SmithingContent.SMITHING_TEMPLATE, stack -> Objects.toString(SmithingTemplate.deserialize(stack)));
     }
 }

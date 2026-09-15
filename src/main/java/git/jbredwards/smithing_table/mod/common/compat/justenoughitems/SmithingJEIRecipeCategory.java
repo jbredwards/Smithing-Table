@@ -28,7 +28,6 @@ import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.startup.ForgeModIdHelper;
 import mezz.jei.util.Translator;
 import net.minecraft.client.Minecraft;
-import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
 
@@ -49,7 +48,7 @@ public class SmithingJEIRecipeCategory implements IRecipeCategory<SmithingJEIRec
     protected final IDrawable background, icon, slot, arrow;
     public SmithingJEIRecipeCategory(@Nonnull final IGuiHelper guiHelper) {
         background = guiHelper.createDrawable(GuiSmithingTable.TEXTURE, 0, 228, 108, 28); // Blank.
-        icon = guiHelper.createDrawableIngredient(Item.getItemFromBlock(SmithingContent.SMITHING_TABLE).getDefaultInstance());
+        icon = guiHelper.createDrawableIngredient(SmithingContent.SMITHING_TABLE_ITEM.getDefaultInstance());
         slot = guiHelper.getSlotDrawable();
         arrow = guiHelper.createDrawable(GuiSmithingTable.TEXTURE, 60, 167, 24, 17);
     }

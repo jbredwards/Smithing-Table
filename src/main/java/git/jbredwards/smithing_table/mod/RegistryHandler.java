@@ -76,14 +76,14 @@ final class RegistryHandler
 
     @SubscribeEvent
     static void registerItems(@Nonnull final RegistryEvent.Register<Item> event) {
-        event.getRegistry().register(new ItemSmithingTable(SmithingContent.SMITHING_TABLE).setRegistryName("table"));
+        event.getRegistry().register(SmithingContent.SMITHING_TABLE_ITEM.setRegistryName("table"));
         event.getRegistry().register(SmithingContent.SMITHING_TEMPLATE.setCreativeTab(SmithingContent.CREATIVE_TAB).setTranslationKey(SmithingTable.MOD_ID + ".template").setRegistryName("template"));
     }
 
     @SideOnly(Side.CLIENT)
     @SubscribeEvent
     static void registerItemModels(@Nonnull final ModelRegistryEvent event) {
-        ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(SmithingContent.SMITHING_TABLE), 0, new ModelResourceLocation(SmithingContent.SMITHING_TABLE.getRegistryName(), "inventory"));
+        ModelLoader.setCustomModelResourceLocation(SmithingContent.SMITHING_TABLE_ITEM, 0, new ModelResourceLocation(SmithingContent.SMITHING_TABLE_ITEM.getRegistryName(), "inventory"));
         ModelLoader.setCustomModelResourceLocation(SmithingContent.SMITHING_TEMPLATE, 0, new ModelResourceLocation(SmithingContent.SMITHING_TEMPLATE.getRegistryName(), "inventory"));
         ModelLoaderRegistry.registerLoader(ModelSmithingTable.Loader.INSTANCE);
         ModelLoaderRegistry.registerLoader(ModelSmithingTemplate.Loader.INSTANCE);
@@ -118,12 +118,12 @@ final class RegistryHandler
 
             primer.input.replaceAll(i -> i.test(defaultPlanks) ? Ingredient.fromStacks(new ItemStack(variant.item, 1, variant.meta)) : i);
             event.getRegistry().register(new ShapedOreRecipe(group,
-                    ItemSmithingTable.setVariant(new ItemStack(SmithingContent.SMITHING_TABLE), variant), primer).setRegistryName(
+                    ItemSmithingTable.setVariant(new ItemStack(SmithingContent.SMITHING_TABLE_ITEM), variant), primer).setRegistryName(
                     "tables/" + Objects.toString(variant.item.getRegistryName()).replace(':', '/') + '/' + variant.meta));
         }
 
         // Register a generic recipe for the default variant.
-        event.getRegistry().register(new ShapedOreRecipe(group, ItemSmithingTable.setVariant(new ItemStack(SmithingContent.SMITHING_TABLE), TableData.DEFAULT), recipe).setRegistryName("tables/generic"));
+        event.getRegistry().register(new ShapedOreRecipe(group, ItemSmithingTable.setVariant(new ItemStack(SmithingContent.SMITHING_TABLE_ITEM), TableData.DEFAULT), recipe).setRegistryName("tables/generic"));
     }
 
     @SubscribeEvent
