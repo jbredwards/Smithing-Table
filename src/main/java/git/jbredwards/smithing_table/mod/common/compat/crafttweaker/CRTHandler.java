@@ -86,6 +86,6 @@ public final class CRTHandler implements IBracketHandler
     @Nonnull
     @Override
     public String getRegexMatchingString() {
-        return "smithing_template:.*";
+        return "smithing_template:.*:.*";
     }
 }
