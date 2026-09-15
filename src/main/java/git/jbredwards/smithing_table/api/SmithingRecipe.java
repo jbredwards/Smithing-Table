@@ -179,7 +179,7 @@ public interface SmithingRecipe extends IForgeRegistryEntry<SmithingRecipe>
             if(template instanceof SmithingTemplate) this.template = new SmithingTemplateIngredient((SmithingTemplate)template);
             else this.template = Objects.requireNonNull(CraftingHelper.getIngredient(template), "Cannot parse template ingredient: " + template);
             this.equipment = Objects.requireNonNull(CraftingHelper.getIngredient(equipment), "Cannot parse equipment ingredient: " + equipment);
-            this.material = Objects.requireNonNull(CraftingHelper.getIngredient(material), "Cannot parse material ingredient: " + equipment);
+            this.material = Objects.requireNonNull(CraftingHelper.getIngredient(material), "Cannot parse material ingredient: " + material);
             this.result = Objects.requireNonNull(result);
             this.sound = Objects.requireNonNull(sound);
         }
