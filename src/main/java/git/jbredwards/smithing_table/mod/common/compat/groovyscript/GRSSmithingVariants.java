@@ -22,8 +22,11 @@ import com.cleanroommc.groovyscript.api.IScriptReloadable;
 import com.cleanroommc.groovyscript.api.documentation.annotations.MethodDescription;
 import git.jbredwards.smithing_table.mod.common.block.TableData;
 import git.jbredwards.smithing_table.mod.common.item.ItemSmithingTable;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
+import net.minecraftforge.oredict.OreDictionary;
 
 import javax.annotation.Nonnull;
 import java.util.Collection;
@@ -63,8 +66,14 @@ public class GRSSmithingVariants implements IScriptReloadable
     @MethodDescription(type = MethodDescription.Type.ADDITION)
     public void add(@Nonnull final ItemStack variant) {
         if(variant.getItem() instanceof ItemBlock) {
-            if(!variant.isEmpty()) ItemSmithingTable.CUSTOM_VARIANTS.add(new TableData(variant.getItem(), variant.getMetadata()));
-            else GroovyLog.get().errorMC("Cannot add empty variant to smithing table");
+            if(variant.isEmpty()) GroovyLog.get().errorMC("Cannot add empty variant to smithing table");
+            else if(variant.getMetadata() == OreDictionary.WILDCARD_VALUE) {
+                @Nonnull final NonNullList<ItemStack> variants = NonNullList.create();
+                variant.getItem().getSubItems(CreativeTabs.SEARCH, variants);
+                variants.forEach(this::add);
+            }
+
+            else ItemSmithingTable.CUSTOM_VARIANTS.add(new TableData(variant.getItem(), variant.getMetadata()));
         }
 
         else GroovyLog.get().errorMC("Cannot add empty or non-block variant to smithing table");
@@ -75,8 +84,14 @@ public class GRSSmithingVariants implements IScriptReloadable
      */
     @MethodDescription(type = MethodDescription.Type.REMOVAL)
     public void remove(@Nonnull final ItemStack variant) {
-        if(!variant.isEmpty()) ItemSmithingTable.REMOVED_VARIANTS.add(new TableData(variant.getItem(), variant.getMetadata()));
-        else GroovyLog.get().errorMC("Cannot remove empty variant from smithing table");
+        if(variant.isEmpty()) GroovyLog.get().errorMC("Cannot remove empty variant from smithing table");
+        else if(variant.getMetadata() == OreDictionary.WILDCARD_VALUE) {
+            @Nonnull final NonNullList<ItemStack> variants = NonNullList.create();
+            variant.getItem().getSubItems(CreativeTabs.SEARCH, variants);
+            variants.forEach(this::remove);
+        }
+
+        else ItemSmithingTable.REMOVED_VARIANTS.add(new TableData(variant.getItem(), variant.getMetadata()));
     }
 
     /**

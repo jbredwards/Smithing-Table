@@ -23,7 +23,11 @@ import crafttweaker.api.minecraft.CraftTweakerMC;
 import git.jbredwards.smithing_table.mod.SmithingTable;
 import git.jbredwards.smithing_table.mod.common.block.TableData;
 import git.jbredwards.smithing_table.mod.common.item.ItemSmithingTable;
+import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
+import net.minecraftforge.oredict.OreDictionary;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenMethod;
 
@@ -40,10 +44,19 @@ public final class CRTSmithingVariants
 {
     @ZenMethod
     public static void add(@Nonnull final IItemStack variant) {
-        if(variant.isItemBlock()) {
-            @Nonnull final ItemStack stack = CraftTweakerMC.getItemStack(variant);
-            if(!stack.isEmpty()) ItemSmithingTable.CUSTOM_VARIANTS.add(new TableData(stack.getItem(), stack.getMetadata()));
-            else CraftTweakerAPI.logError("Cannot add empty variant to smithing table");
+        add(CraftTweakerMC.getItemStack(variant));
+    }
+
+    private static void add(@Nonnull final ItemStack variant) {
+        if(variant.getItem() instanceof ItemBlock) {
+            if(variant.isEmpty()) CraftTweakerAPI.logError("Cannot add empty variant to smithing table");
+            else if(variant.getMetadata() == OreDictionary.WILDCARD_VALUE) {
+                @Nonnull final NonNullList<ItemStack> variants = NonNullList.create();
+                variant.getItem().getSubItems(CreativeTabs.SEARCH, variants);
+                variants.forEach(CRTSmithingVariants::add);
+            }
+
+            else ItemSmithingTable.CUSTOM_VARIANTS.add(new TableData(variant.getItem(), variant.getMetadata()));
         }
 
         else CraftTweakerAPI.logError("Cannot add empty or non-block variant to smithing table");
@@ -54,9 +67,18 @@ public final class CRTSmithingVariants
      */
     @ZenMethod
     public static void remove(@Nonnull final IItemStack variant) {
-        @Nonnull final ItemStack stack = CraftTweakerMC.getItemStack(variant);
-        if(!stack.isEmpty()) ItemSmithingTable.REMOVED_VARIANTS.add(new TableData(stack.getItem(), stack.getMetadata()));
-        else CraftTweakerAPI.logError("Cannot remove empty variant from smithing table");
+        remove(CraftTweakerMC.getItemStack(variant));
+    }
+
+    private static void remove(@Nonnull final ItemStack variant) {
+        if(variant.isEmpty()) CraftTweakerAPI.logError("Cannot remove empty variant from smithing table");
+        else if(variant.getMetadata() == OreDictionary.WILDCARD_VALUE) {
+            @Nonnull final NonNullList<ItemStack> variants = NonNullList.create();
+            variant.getItem().getSubItems(CreativeTabs.SEARCH, variants);
+            variants.forEach(CRTSmithingVariants::remove);
+        }
+
+        else ItemSmithingTable.REMOVED_VARIANTS.add(new TableData(variant.getItem(), variant.getMetadata()));
     }
 
     /**

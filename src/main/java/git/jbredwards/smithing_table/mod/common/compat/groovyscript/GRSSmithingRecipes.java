@@ -150,7 +150,7 @@ public class GRSSmithingRecipes extends ForgeRegistryWrapper<SmithingRecipe>
         @Override
         public void validate(@Nonnull final GroovyLog.Msg msg) {
             // Allow empty template ingredient.
-            if(template == null && !input.isEmpty()) template = input.remove(0);
+            if(template == null && input.size() == 3) template = input.remove(0);
             validateItems(msg, 2, 2, 1, 1);
         }
 
